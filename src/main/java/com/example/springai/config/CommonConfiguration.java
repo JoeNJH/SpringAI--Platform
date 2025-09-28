@@ -4,6 +4,7 @@ import com.example.springai.constants.SystemConstants;
 import com.example.springai.tools.CourseTools;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
@@ -14,6 +15,8 @@ import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
+
 @Configuration
 public class CommonConfiguration {
 
@@ -22,7 +25,7 @@ public class CommonConfiguration {
         return MessageWindowChatMemory.builder().build();
     }
 
-    // 多模态交流客户端配置
+    // 多模态对话客户端配置
 
     @Bean
     public ChatClient chatClient(OpenAiChatModel model, ChatMemory chatMemory){
@@ -31,12 +34,14 @@ public class CommonConfiguration {
                 .defaultSystem("你是一个智能助手,名字叫小灰灰,请以小灰灰的身份回答问题")
                 .defaultAdvisors(
                         new SimpleLoggerAdvisor(),
+                 // 敏感词校验
+                        new SafeGuardAdvisor(SystemConstants.SENSITIVE_WORDS),
                         MessageChatMemoryAdvisor.builder(chatMemory).build()
                 )
                 .build();
     }
 
-    //   游戏AI客户端
+    //   模拟女友游戏客户端配置
 
     @Bean
     public ChatClient gameChatClient(OpenAiChatModel model, ChatMemory chatMemory){

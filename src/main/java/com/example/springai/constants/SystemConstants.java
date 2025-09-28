@@ -1,5 +1,7 @@
 package com.example.springai.constants;
 
+import java.util.List;
+
 public class SystemConstants {
 
     // 系统提示词 prompt
@@ -127,4 +129,15 @@ public class SystemConstants {
             
             
             """;
+
+
+
+   // 敏感词列表
+
+    public static final List<String> SENSITIVE_WORDS = List.of(
+            "赌博","博彩","六合彩",
+            "色情","成人内容", "毒品","贩毒", "暴力",
+            "极端主义", "仇恨言论", "诈骗","黑灰产", "个人隐私数据",
+            "台湾","VPN","翻墙","习近平"
+    );;
 }
