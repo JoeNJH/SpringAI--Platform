@@ -50,7 +50,7 @@ const aiApps = ref([
   },
   {
     id: 3,
-    title: '程序员家辉智能客服',
+    title: '智能客服小灰灰',
     description: '24小时在线的智能课程咨询师',
     route: '/customer-service',
     icon: UserGroupIcon
