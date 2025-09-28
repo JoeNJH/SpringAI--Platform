@@ -22,7 +22,7 @@ public class CommonConfiguration {
         return MessageWindowChatMemory.builder().build();
     }
 
-    // 正常交流客户端配置
+    // 多模态交流客户端配置
 
     @Bean
     public ChatClient chatClient(OpenAiChatModel model, ChatMemory chatMemory){
@@ -64,6 +64,9 @@ public class CommonConfiguration {
                 .defaultTools(courseTools)
                 .build();
     }
+
+
+    //  RAG信息检索增强生成器客户端配置
 
     @Bean
     public ChatClient pdfChatClient(OpenAiChatModel model, ChatMemory chatMemory, VectorStore vectorStore){
