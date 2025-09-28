@@ -27,7 +27,7 @@ public class ChatController {
     @RequestMapping(value = "/chat",produces = "text/html;charset=utf-8")
     public Flux<String> chat(@RequestParam("prompt") String prompt,
                              @RequestParam("chatId") String chatId,
-                             @RequestParam("files") List<MultipartFile> files){
+                             @RequestParam(value = "files", required = false) List<MultipartFile> files){
 
         // 1 存储会话ID
         chatHistoryRepository.save("chat",chatId);
