@@ -1,39 +1,40 @@
 package com.example.springai.repository;
 
+import com.example.springai.entity.po.UserChatindex;
+import com.example.springai.mapper.UserChatindexMapper;
+import com.example.springai.service.IUserChatindexService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+@RequiredArgsConstructor
 @Component
 public class InMemoryChatHistoryRepository implements ChatHistoryRepository{
 
-    // 可以用Redis进行改造
+    private final IUserChatindexService userChatindexService;
 
-    private final Map<String, List<String>> chatHistory = new HashMap<>();
+    private final UserChatindexMapper userChatindexMapper;
+
 
     @Override
     public void save(String type, String chatId) {
-        /*if (!chatHistory.containsKey(type)) {
-       chatHistory.put(type, new ArrayList<>();
-     List<String> chatIds = chatHistory-get(type);*/
 
-        List<String> chatIds = chatHistory.computeIfAbsent(type, k -> new ArrayList<>());
-
-        if (chatIds.contains(chatId)) {
-
+        if(userChatindexMapper.selectById(chatId) != null) {
             return;
         }
-        chatIds.add (chatId);
+        UserChatindex userChatindex = new UserChatindex();
+        userChatindex.setConversationId(chatId);
+        userChatindex.setType(type);
+        userChatindex.setUid(1);
+        userChatindexService.save(userChatindex);
     }
 
     @Override
     public List<String> getChatIds(String type) {
 
-     /*List<String> chatIds = chatHistory.get(type);
-     return chatIds == null ? List.of() : chatIds;*/
-        return chatHistory.getOrDefault(type, List.of());
+         return userChatindexService.lambdaQuery().select(UserChatindex::getConversationId)
+                .eq(UserChatindex::getType, type).list()
+                 .stream().map(UserChatindex::getConversationId).toList();
     }
 }
