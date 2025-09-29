@@ -22,7 +22,9 @@ public class CommonConfiguration {
 
     @Bean
     public ChatMemory chatMemory(){
-        return MessageWindowChatMemory.builder().build();
+
+       //设置一个最大的消息存储数量
+        return MessageWindowChatMemory.builder().maxMessages(15).build();
     }
 
     // 多模态对话客户端配置
