@@ -20,6 +20,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CommonConfiguration {
 
+
+    // 数据库持久化存储配置
     @Autowired
     JdbcChatMemoryRepository chatMemoryRepository;
 
