@@ -10,6 +10,8 @@ import java.util.Map;
 @Component
 public class InMemoryChatHistoryRepository implements ChatHistoryRepository{
 
+    // 可以用Redis进行改造
+
     private final Map<String, List<String>> chatHistory = new HashMap<>();
 
     @Override
