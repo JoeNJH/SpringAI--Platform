@@ -41,6 +41,13 @@
             <version>3.5.10.1</version>
         </dependency>
 
+        <!-- springboot JDBC-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+
+
         <!-- springai会话记忆持久性存储JDBC  -->
 
         <dependency>
