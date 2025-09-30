@@ -55,14 +55,12 @@ public class LocalPdfFileRepository implements FileRepository{
                 throw new RuntimeException(e);
             }
         }
-        // 使用 Qdrant：去掉 SimpleVectorStore 的加载
     }
 
     @PreDestroy
     private void persistent() {
         try {
             chatFiles.store(new FileWriter("chat-pdf.properties"), LocalDateTime.now().toString());
-            // 使用 Qdrant：去掉 SimpleVectorStore 的保存
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
