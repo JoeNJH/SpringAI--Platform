@@ -86,7 +86,7 @@ public class CommonConfiguration {
     public ChatClient pdfChatClient(OpenAiChatModel model, ChatMemory chatMemory, VectorStore vectorStore){
 
         return ChatClient.builder(model)
-                .defaultSystem("请根据上下文回答问题,遇到上下文没有的问题,")
+                .defaultSystem("请根据上下文回答问题,遇到上下文没有的问题,请拒绝回答或不知道,禁止编造")
                 .defaultAdvisors(
                         new SimpleLoggerAdvisor(),
                         MessageChatMemoryAdvisor.builder(chatMemory).build(),
