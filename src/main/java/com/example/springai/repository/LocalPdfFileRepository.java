@@ -1,26 +1,22 @@
 package com.example.springai.repository;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Properties;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class LocalPdfFileRepository implements FileRepository{
 
-    private final Properties chatFiles = new Properties();
-
+    private final StringRedisTemplate redisTemplate;
 
     @Override
     public boolean save(String chatId, Resource resource) {
@@ -34,39 +30,16 @@ public class LocalPdfFileRepository implements FileRepository{
                 return  false;
             }
         }
-        chatFiles.put(chatId,filename);
+        String path = target.getAbsolutePath();
+        redisTemplate.opsForHash().put("chat-pdf",chatId,path);
         return true;
     }
 
     @Override
     public Resource getFile(String chatId) {
-        return new FileSystemResource(chatFiles.getProperty(chatId));
+        Object path = redisTemplate.opsForHash().get("chat-pdf", chatId);
+        String filePath = Objects.requireNonNull(path,"No file found for chatId"+chatId).toString();
+        return new FileSystemResource(filePath);
     }
-
-
-//  持久化处理
-    @PostConstruct
-    private void init() {
-        FileSystemResource pdfResource = new FileSystemResource("chat-pdf.properties");
-        if (pdfResource.exists()) {
-            try {
-                chatFiles.load(new BufferedReader(new InputStreamReader(pdfResource.getInputStream())));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    @PreDestroy
-    private void persistent() {
-        try {
-            chatFiles.store(new FileWriter("chat-pdf.properties"), LocalDateTime.now().toString());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-
 
 }
