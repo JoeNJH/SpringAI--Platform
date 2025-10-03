@@ -29,6 +29,12 @@ spring:
         repository:
           jdbc:
             initialize-schema: always
+    mcp:
+      client:
+        request-timeout: 20s
+        stdio:
+          servers-configuration: classpath:/mcp/mcp-servers-config.json
+
 
   data:
     redis:

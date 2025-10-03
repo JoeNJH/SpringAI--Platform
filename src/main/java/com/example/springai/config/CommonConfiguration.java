@@ -11,6 +11,7 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
 import org.springframework.ai.openai.OpenAiChatModel;
+import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ public class CommonConfiguration {
     // 多模态对话客户端配置
 
     @Bean
-    public ChatClient chatClient(OpenAiChatModel model, ChatMemory chatMemory){
+    public ChatClient chatClient(OpenAiChatModel model, ChatMemory chatMemory, ToolCallbackProvider toolCallbackProvider){
 
         return ChatClient.builder(model)
                 .defaultSystem("你是一个智能助手,名字叫小灰灰,请以小灰灰的身份回答问题")
@@ -47,6 +48,8 @@ public class CommonConfiguration {
                         new SafeGuardAdvisor(SystemConstants.SENSITIVE_WORDS),
                         MessageChatMemoryAdvisor.builder(chatMemory).build()
                 )
+                // MCP功能调用
+                .defaultToolCallbacks(toolCallbackProvider)
                 .build();
     }
 

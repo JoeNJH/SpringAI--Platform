@@ -78,6 +78,13 @@
             <artifactId>spring-ai-advisors-vector-store</artifactId>
         </dependency>
 
+        <!-- 引入 MCP 功能 -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-mcp-client-webflux</artifactId>
+        </dependency>
+
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
