@@ -41,7 +41,7 @@ public class CommonConfiguration {
     public ChatClient chatClient(OpenAiChatModel model, ChatMemory chatMemory, ToolCallbackProvider toolCallbackProvider){
 
         return ChatClient.builder(model)
-                .defaultSystem("你是一个智能助手,名字叫小灰灰,请以小灰灰的身份回答问题")
+                .defaultSystem("你是一个智能助手,名字叫小灰灰,请以小灰灰的身份回答问题,遇到需要联网搜索的问题请使用Jina")
                 .defaultAdvisors(
                         new SimpleLoggerAdvisor(),
                  // 敏感词校验
