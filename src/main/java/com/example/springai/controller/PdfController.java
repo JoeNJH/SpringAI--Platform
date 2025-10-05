@@ -77,6 +77,9 @@ public class PdfController {
                 return Result.fail("Only PDF files are allowed");
             }
 
+
+            /// 进行判断 是否是重复读入文件 避免RAG知识库重复向量过大
+
             boolean success = fileRepository.save(chatId,file.getResource());
 
             if (! success){
@@ -125,8 +128,6 @@ public class PdfController {
         TokenTextSplitter splitter = new TokenTextSplitter(320,80,30,10000,false);
 
         List<Document> apply = splitter.apply(documents);
-
-        /// 进行判断 是否是重复读入文件 避免RAG知识库重复向量过大
 
         vectorStore.add(apply);
 
