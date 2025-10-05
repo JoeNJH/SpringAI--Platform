@@ -77,13 +77,13 @@ public class PdfController {
                 return Result.fail("Only PDF files are allowed");
             }
 
+            String success = fileRepository.save(chatId,file.getResource());
 
-            /// 进行判断 是否是重复读入文件 避免RAG知识库重复向量过大
-
-            boolean success = fileRepository.save(chatId,file.getResource());
-
-            if (! success){
+            if (success.equals("2")){
                 return Result.fail("Failed to save PDF file");
+            }else if (success.equals("0")){
+                /// 进行判断 是否是重复读入文件 避免RAG知识库重复向量过大
+                return Result.ok();
             }
 
             this.writeToVectorStore(file.getResource());

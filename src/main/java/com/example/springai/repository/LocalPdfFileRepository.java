@@ -19,20 +19,23 @@ public class LocalPdfFileRepository implements FileRepository{
     private final StringRedisTemplate redisTemplate;
 
     @Override
-    public boolean save(String chatId, Resource resource) {
+    public String save(String chatId, Resource resource) {
         String filename = resource.getFilename();
         File target = new File(Objects.requireNonNull(filename));
         if (!target.exists()){
             try {
                 Files.copy(resource.getInputStream(),target.toPath());
+                String path = target.getAbsolutePath();
+                redisTemplate.opsForHash().put("chat-pdf",chatId,path);
+                return "1";
             } catch (IOException e) {
                 log.error("Failed to save PDF resource",e);
-                return  false;
+                return  "2";
             }
         }
         String path = target.getAbsolutePath();
         redisTemplate.opsForHash().put("chat-pdf",chatId,path);
-        return true;
+        return "0";
     }
 
     @Override
