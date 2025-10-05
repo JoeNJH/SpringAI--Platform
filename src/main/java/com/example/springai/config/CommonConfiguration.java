@@ -6,13 +6,13 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
-import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
 import org.springframework.ai.openai.OpenAiChatModel;
+import org.springframework.ai.rag.advisor.RetrievalAugmentationAdvisor;
+import org.springframework.ai.rag.retrieval.search.VectorStoreDocumentRetriever;
 import org.springframework.ai.tool.ToolCallbackProvider;
-import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -89,12 +89,21 @@ public class CommonConfiguration {
     public ChatClient pdfChatClient(OpenAiChatModel model, ChatMemory chatMemory, VectorStore vectorStore){
 
         return ChatClient.builder(model)
-                .defaultSystem("请根据上下文回答问题,遇到上下文没有的问题,请拒绝回答或不知道,禁止编造")
                 .defaultAdvisors(
                         new SimpleLoggerAdvisor(),
                         MessageChatMemoryAdvisor.builder(chatMemory).build(),
-                        QuestionAnswerAdvisor.builder(vectorStore)
-                                .searchRequest(SearchRequest.builder().similarityThreshold(0.5).topK(8).build())
+
+//                        QuestionAnswerAdvisor.builder(vectorStore)
+//                                .searchRequest(SearchRequest.builder().similarityThreshold(0.5).topK(8).build())
+//                                .build()
+
+                       //  增强版RAG顾问机制
+                        RetrievalAugmentationAdvisor.builder()
+                                .documentRetriever(VectorStoreDocumentRetriever.builder()
+                                        .similarityThreshold(0.50)
+                                        .topK(8)
+                                        .vectorStore(vectorStore)
+                                        .build())
                                 .build()
                 )
                 .build();
