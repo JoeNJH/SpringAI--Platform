@@ -114,7 +114,7 @@ public class PdfController {
                 resource,
                 PdfDocumentReaderConfig.builder()
                         .withPageExtractedTextFormatter(ExtractedTextFormatter.defaults())
-                        .withPagesPerDocument(1)
+                        .withPagesPerDocument(2)
                         .build()
         );
 
