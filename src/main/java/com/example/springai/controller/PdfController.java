@@ -60,6 +60,7 @@ public class PdfController {
         return pdfChatClient.prompt()
                 .user(prompt)
                 .advisors(a->a.param(ChatMemory.CONVERSATION_ID,chatId))
+                // 过滤元数据
                 .advisors(a->a.param(QuestionAnswerAdvisor.FILTER_EXPRESSION,"file_name =='" + file.getFilename() + "' "))
                 .stream()
                 .content();
