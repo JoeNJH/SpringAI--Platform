@@ -13,6 +13,7 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.reader.ExtractedTextFormatter;
 import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
 import org.springframework.ai.reader.pdf.config.PdfDocumentReaderConfig;
+import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -40,6 +41,7 @@ public class PdfController {
 
     private final ChatHistoryRepository chatHistoryRepository;
 
+    // PDF对话
     @RequestMapping(value = "/chat",produces = "text/html;charset=utf-8")
     public Flux<String> chat(String prompt, String chatId){
 
@@ -65,7 +67,7 @@ public class PdfController {
 
 
 
-//    文件上传
+    //    文件上传
     @RequestMapping("/upload/{chatId}")
     public Result uploadPdf(@PathVariable String chatId, @RequestParam("file") MultipartFile file){
         try {
@@ -89,7 +91,7 @@ public class PdfController {
         }
     }
 
-//    文件下载
+    //    文件下载
     @GetMapping("/file/{chatId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable("chatId") String chatId){
         Resource resource = fileRepository.getFile(chatId);
@@ -104,9 +106,7 @@ public class PdfController {
     }
 
 
-
-
-
+    //  文件处理以及向量化 存入向量数据库
     private void writeToVectorStore(Resource resource) {
 
         PagePdfDocumentReader reader = new PagePdfDocumentReader(
@@ -118,6 +118,11 @@ public class PdfController {
         );
 
         List<Document> documents = reader.read();
+
+
+
+
+        /// 进行判断 是否是重复读入文件 避免RAG知识库重复向量过大
 
         vectorStore.add(documents);
 
