@@ -78,6 +78,12 @@
             <artifactId>spring-ai-advisors-vector-store</artifactId>
         </dependency>
 
+        <!-- 高级RAG功能 -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-rag</artifactId>
+        </dependency>
+
         <!-- 引入 MCP 功能 -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
