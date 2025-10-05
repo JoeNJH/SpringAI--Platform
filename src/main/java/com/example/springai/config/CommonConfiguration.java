@@ -94,11 +94,10 @@ public class CommonConfiguration {
                         new SimpleLoggerAdvisor(),
                         MessageChatMemoryAdvisor.builder(chatMemory).build(),
                         QuestionAnswerAdvisor.builder(vectorStore)
-                                .searchRequest(SearchRequest.builder().similarityThreshold(0.5).topK(4).build())
+                                .searchRequest(SearchRequest.builder().similarityThreshold(0.5).topK(8).build())
                                 .build()
                 )
                 .build();
     }
-
 
 }
