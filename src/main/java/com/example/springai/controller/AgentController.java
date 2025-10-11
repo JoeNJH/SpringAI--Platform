@@ -25,7 +25,7 @@ public class AgentController {
                              @RequestParam("chatId") String chatId){
 
         // 1 存储会话ID
-        chatHistoryRepository.save("chat",chatId);
+        chatHistoryRepository.save("agent",chatId);
 
         return textChat(prompt,chatId);
     }
