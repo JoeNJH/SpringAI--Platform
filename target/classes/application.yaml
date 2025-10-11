@@ -2,10 +2,6 @@ spring:
   application:
     name: SpringAI
   ai:
-#    ollama:
-#      base-url: http://192.168.0.121:11434
-#      chat:
-#        model: deepseek-r1:8b
     openai:
       api-key: ${OPENAI_API_KEY}
       base-url: https://generativelanguage.googleapis.com/v1beta/openai/
@@ -52,12 +48,12 @@ spring:
 
   http:
     codecs:
-      max-in-memory-size: 10MB
+      max-in-memory-size: 20MB
 
   servlet:
    multipart:
-    max-file-size: 100MB        # 单个文件上限
-    max-request-size: 120MB     # 整个请求上限（所有文件+表单）
+    max-file-size: 30MB        # 单个文件上限
+    max-request-size: 100MB     # 整个请求上限（所有文件+表单）
 
 logging:
   level:

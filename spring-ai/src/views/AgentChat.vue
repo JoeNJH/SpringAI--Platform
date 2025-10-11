@@ -3,10 +3,10 @@
     <div class="chat-container">
       <div class="sidebar">
         <div class="history-header">
-          <h2>聊天记录</h2>
+          <h2>Chat History</h2>
           <button class="new-chat" @click="startNewChat">
             <PlusIcon class="icon" />
-            新对话
+            New Chat
           </button>
         </div>
         <div class="history-list">
@@ -18,7 +18,7 @@
               @click="loadChat(chat.id)"
           >
             <ChatBubbleLeftRightIcon class="icon" />
-            <span class="title">{{ chat.title || '新对话' }}</span>
+            <span class="title">{{ chat.title || 'New Chat' }}</span>
           </div>
         </div>
       </div>
@@ -38,7 +38,7 @@
             <textarea
                 v-model="userInput"
                 @keydown.enter.prevent="sendMessage"
-                placeholder="输入消息..."
+                placeholder="Type a message..."
                 rows="1"
                 ref="inputRef"
             ></textarea>
@@ -79,7 +79,7 @@ const chatHistory = ref([])
 const route = useRoute()
 const router = useRouter()
 
-// 自动调整输入框高度
+// Auto-adjust textarea height
 const adjustTextareaHeight = () => {
   const textarea = inputRef.value
   if (textarea) {
@@ -90,7 +90,7 @@ const adjustTextareaHeight = () => {
   }
 }
 
-// 滚动到底部
+// Scroll to bottom
 const scrollToBottom = async () => {
   await nextTick()
   if (messagesRef.value) {
@@ -98,14 +98,14 @@ const scrollToBottom = async () => {
   }
 }
 
-// 发送消息函数
+// Send message function
 const sendMessage = async () => {
   if (isStreaming.value) return
   if (!userInput.value.trim()) return
 
   const messageContent = userInput.value.trim()
 
-  // 添加用户消息
+  // Add user message
   const userMessage = {
     role: 'user',
     content: messageContent,
@@ -113,12 +113,12 @@ const sendMessage = async () => {
   }
   currentMessages.value.push(userMessage)
 
-  // 清空输入
+  // Clear input
   userInput.value = ''
   adjustTextareaHeight()
   await scrollToBottom()
 
-  // 添加助手消息占位
+  // Add assistant message placeholder
   const assistantMessage = {
     role: 'assistant',
     content: '',
@@ -128,7 +128,7 @@ const sendMessage = async () => {
   isStreaming.value = true
 
   try {
-    // 使用Agent专用接口发送消息
+    // Use agent-specific API to send message
     const reader = await chatAPI.sendMessageAgent(messageContent, route.query.agentId, currentChatId.value)
     const decoder = new TextDecoder('utf-8')
     let accumulatedContent = ''
@@ -138,11 +138,11 @@ const sendMessage = async () => {
         const { value, done } = await reader.read()
         if (done) break
 
-        // 累积新内容
+        // Accumulate new content
         accumulatedContent += decoder.decode(value)
 
         await nextTick(() => {
-          // 更新消息，使用累积的内容
+          // Update message with accumulated content
           const updatedMessage = {
             ...assistantMessage,
             content: accumulatedContent
@@ -152,32 +152,32 @@ const sendMessage = async () => {
         })
         await scrollToBottom()
       } catch (readError) {
-        console.error('读取流错误:', readError)
+        console.error('Stream reading error:', readError)
         break
       }
     }
   } catch (error) {
-    console.error('发送消息失败:', error)
-    assistantMessage.content = '抱歉，发生了错误，请稍后重试。'
+    console.error('Failed to send message:', error)
+    assistantMessage.content = 'Sorry, an error occurred. Please try again later.'
   } finally {
     isStreaming.value = false
     await scrollToBottom()
   }
 }
 
-// 加载特定对话
+// Load specific chat
 const loadChat = async (chatId) => {
   currentChatId.value = chatId
   try {
     const messages = await chatAPI.getChatMessages(chatId, 'agent')
     currentMessages.value = messages
   } catch (error) {
-    console.error('加载对话消息失败:', error)
+    console.error('Failed to load chat messages:', error)
     currentMessages.value = []
   }
 }
 
-// 加载聊天历史
+// Load chat history
 const loadChatHistory = async () => {
   try {
     const history = await chatAPI.getChatHistory('agent')
@@ -188,27 +188,27 @@ const loadChatHistory = async () => {
       startNewChat()
     }
   } catch (error) {
-    console.error('加载聊天历史失败:', error)
+    console.error('Failed to load chat history:', error)
     chatHistory.value = []
     startNewChat()
   }
 }
 
-// 开始新对话
+// Start new chat
 const startNewChat = () => {
   const newChatId = Date.now().toString()
   currentChatId.value = newChatId
   currentMessages.value = []
 
-  // 添加新对话到聊天历史列表
+  // Add new chat to chat history list
   const newChat = {
     id: newChatId,
-    title: `Agent对话 ${newChatId.slice(-6)}`
+    title: `Agent Chat ${newChatId.slice(-6)}`
   }
   chatHistory.value = [newChat, ...chatHistory.value]
 }
 
-// 监听路由变化
+// Watch route changes
 watch(() => route.query, () => {
   if (route.query.type === 'agent' && route.query.agentId) {
     loadChatHistory()
