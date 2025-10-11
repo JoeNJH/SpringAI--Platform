@@ -10,7 +10,11 @@
             @click="selectAgent(agent)"
         >
           <div class="card-content">
-            <component :is="agent.icon" class="icon" />
+            <img
+                :src="getAgentIcon(agent.title)"
+                :alt="agent.title"
+                class="agent-image"
+            />
             <h2>{{ agent.title }}</h2>
             <p>{{ agent.description }}</p>
           </div>
@@ -23,12 +27,6 @@
 <script setup>
 import { ref } from 'vue'
 import { useDark } from '@vueuse/core'
-import {
-  ChatBubbleLeftRightIcon,
-  HeartIcon,
-  UserGroupIcon,
-  DocumentTextIcon
-} from '@heroicons/vue/24/outline'
 import { useRouter } from 'vue-router'
 
 const isDark = useDark()
@@ -38,32 +36,30 @@ const agents = ref([
   {
     id: 1,
     title: 'Avery',
-    description: 'A student with many ideas but cannot decide what to write about',
-    icon: ChatBubbleLeftRightIcon
+    description: 'A student with many ideas but cannot decide what to write about'
   },
   {
     id: 2,
     title: 'Jasmine',
-    description: 'A student who is sensitive to writing feedback',
-    icon: HeartIcon,
-    iconClass: 'heart-icon'
+    description: 'A student who is sensitive to writing feedback'
   },
   {
     id: 3,
     title: 'Kai',
-    description: 'A student who is distracted and off-task',
-    icon: UserGroupIcon
+    description: 'A student who is distracted and off-task'
   },
   {
     id: 4,
     title: 'Miles',
-    description: 'A student who does not like writing and does not want to participate',
-    icon: DocumentTextIcon
+    description: 'A student who does not like writing and does not want to participate'
   }
 ])
 
+const getAgentIcon = (name) => {
+  return `/StudentIcon/${name}.png`
+}
+
 const selectAgent = (agent) => {
-  // 跳转到聊天页面，并传递选中的agent信息
   router.push({
     path: '/agent-chat',
     query: {
@@ -150,16 +146,17 @@ const selectAgent = (agent) => {
       text-align: center;
     }
 
-    .icon {
-      width: 48px;
-      height: 48px;
+    .agent-image {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
       margin-bottom: 1rem;
-      color: #007CF0;
+      border-radius: 10px;
+      transition: transform 0.3s ease;
+    }
 
-      &.heart-icon {
-        color: #ff4d4f;
-        animation: pulse 1.5s ease-in-out infinite;
-      }
+    &:hover .agent-image {
+      transform: scale(1.05);
     }
 
     h2 {
@@ -198,18 +195,6 @@ const selectAgent = (agent) => {
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
   }
 }
 
