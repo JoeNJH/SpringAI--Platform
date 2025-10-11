@@ -114,4 +114,19 @@ public class CommonConfiguration {
                 .build();
     }
 
+
+    //   模拟学生的客户端配置
+
+    @Bean
+    public ChatClient Agent1ChatClient(OpenAiChatModel model, ChatMemory chatMemory){
+
+        return ChatClient.builder(model)
+                .defaultSystem("you are a student who has many ideas and cannot decide what to write about")
+                .defaultAdvisors(
+                        new SimpleLoggerAdvisor(),
+                        MessageChatMemoryAdvisor.builder(chatMemory).build()
+                )
+                .build();
+    }
+
 }

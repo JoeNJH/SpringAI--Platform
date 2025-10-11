@@ -26,7 +26,7 @@ public class InMemoryChatHistoryRepository implements ChatHistoryRepository{
         UserChatindex userChatindex = new UserChatindex();
         userChatindex.setConversationId(chatId);
         userChatindex.setType(type);
-        userChatindex.setUid(1);
+        userChatindex.setUid(1);    // 固定的UserId
         userChatindexService.save(userChatindex);
     }
 
