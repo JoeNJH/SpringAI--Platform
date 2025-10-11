@@ -37,26 +37,26 @@ const router = useRouter()
 const agents = ref([
   {
     id: 1,
-    title: 'Indecisive Student',
+    title: 'Avery',
     description: 'A student with many ideas but cannot decide what to write about',
     icon: ChatBubbleLeftRightIcon
   },
   {
     id: 2,
-    title: 'Sensitive Student',
+    title: 'Jasmine',
     description: 'A student who is sensitive to writing feedback',
     icon: HeartIcon,
     iconClass: 'heart-icon'
   },
   {
     id: 3,
-    title: 'Distracted Student',
+    title: 'Kai',
     description: 'A student who is distracted and off-task',
     icon: UserGroupIcon
   },
   {
     id: 4,
-    title: 'Reluctant Student',
+    title: 'Miles',
     description: 'A student who does not like writing and does not want to participate',
     icon: DocumentTextIcon
   }
