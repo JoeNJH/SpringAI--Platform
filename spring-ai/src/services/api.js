@@ -26,6 +26,31 @@ export const chatAPI = {
     }
   },
 
+  // 发送Agent消息 - 新增接口
+  async sendMessageAgent(data, agentId, chatId) {
+    try {
+      const url = new URL(`${BASE_URL}/agent/chat/${agentId}`)
+      if (chatId) {
+        url.searchParams.append('chatId', chatId)
+      }
+
+      const response = await fetch(url, {
+        method: 'POST',
+        body: data instanceof FormData ? data :
+            new URLSearchParams({ prompt: data })
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      return response.body.getReader()
+    } catch (error) {
+      console.error('API Error:', error)
+      throw error
+    }
+  },
+
   // 获取聊天历史列表
   async getChatHistory(type = 'chat') {  // 添加类型参数
     try {
@@ -37,9 +62,10 @@ export const chatAPI = {
       // 转换为前端需要的格式
       return chatIds.map(id => ({
         id,
-        title: type === 'pdf' ? `PDF对话 ${id.slice(-6)}` : 
-               type === 'service' ? `咨询 ${id.slice(-6)}` :
-               `对话 ${id.slice(-6)}`
+        title: type === 'pdf' ? `PDF对话 ${id.slice(-6)}` :
+            type === 'service' ? `咨询 ${id.slice(-6)}` :
+                type === 'agent' ? `Agent对话 ${id.slice(-6)}` :
+                    `对话 ${id.slice(-6)}`
       }))
     } catch (error) {
       console.error('API Error:', error)
