@@ -23,7 +23,8 @@
         </div>
       </div>
 
-      <div class="chat-main">
+      <!-- 修改后（正确） -->
+      <div class="chat-main" :style="{ backgroundImage: `url(${agentBackground})` }">
         <div class="messages" ref="messagesRef">
           <ChatMessage
               v-for="(message, index) in currentMessages"
@@ -57,7 +58,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, watch } from 'vue'
+import { ref, onMounted, nextTick, watch, computed } from 'vue'
 import { useDark } from '@vueuse/core'
 import { useRoute, useRouter } from 'vue-router'
 import {
@@ -78,6 +79,12 @@ const currentMessages = ref([])
 const chatHistory = ref([])
 const route = useRoute()
 const router = useRouter()
+
+// 计算属性：根据当前选择的学生获取背景图片路径
+const agentBackground = computed(() => {
+  const agentName = route.query.agentName
+  return agentName ? `/StudentIcon/${agentName}.png` : ''
+})
 
 // Auto-adjust textarea height
 const adjustTextareaHeight = () => {
@@ -328,6 +335,9 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     background: rgba(255, 255, 255, 0.95);
+    background-size: 50%; /* 缩小背景图片 */
+    background-position: center; /* 将图片放置在右下角 */
+    background-repeat: no-repeat;
     backdrop-filter: blur(10px);
     border-radius: 1rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
@@ -337,6 +347,11 @@ onMounted(() => {
       flex: 1;
       overflow-y: auto;
       padding: 2rem;
+      background: rgba(255, 255, 255, 0.7); // 半透明背景使消息更易读
+
+      .dark & {
+        background: rgba(40, 40, 40, 0.7); // 暗色模式下的半透明背景
+      }
     }
 
     .input-area {
