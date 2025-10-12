@@ -20,6 +20,13 @@
           </div>
         </div>
       </div>
+
+      <!-- 添加的RAG按钮 -->
+      <div class="rag-button-container">
+        <button class="rag-button" @click="goToRag">
+          RAG Knowledge Base
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -68,6 +75,11 @@ const selectAgent = (agent) => {
       type: 'agent'
     }
   })
+}
+
+// 新增方法：跳转到RAG页面
+const goToRag = () => {
+  window.location.href = 'http://localhost:5173/chat-pdf'
 }
 </script>
 
@@ -171,6 +183,35 @@ const selectAgent = (agent) => {
       .dark & {
         color: #999;
       }
+    }
+  }
+
+  // 添加RAG按钮容器样式
+  .rag-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  // 添加RAG按钮样式
+  .rag-button {
+    background: linear-gradient(45deg, #8a2be2, #9370db); // 紫色渐变
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(138, 43, 226, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
     }
   }
 
