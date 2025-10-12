@@ -64,7 +64,7 @@ export const chatAPI = {
         id,
         title: type === 'pdf' ? `PDF对话 ${id.slice(-6)}` :
             type === 'service' ? `咨询 ${id.slice(-6)}` :
-                type === 'agent' ? `Agent对话 ${id.slice(-6)}` :
+                type === 'agent' ? `Agent Chat ${id.slice(-6)}` :
                     `对话 ${id.slice(-6)}`
       }))
     } catch (error) {
