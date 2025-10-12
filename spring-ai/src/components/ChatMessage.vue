@@ -1,7 +1,8 @@
 <template>
   <div class="message" :class="{ 'message-user': isUser }">
     <div class="avatar">
-      <UserCircleIcon v-if="isUser" class="icon" />
+      <img v-if="!isUser && avatar" :src="avatar" :alt="`${message.role} avatar`" class="custom-avatar" />
+      <UserCircleIcon v-else-if="isUser" class="icon" />
       <ComputerDesktopIcon v-else class="icon" :class="{ 'assistant': !isUser }" />
     </div>
     <div class="content">
@@ -36,6 +37,18 @@ import 'highlight.js/styles/github-dark.css'
 const contentRef = ref(null)
 const copied = ref(false)
 const copyButtonTitle = computed(() => copied.value ? '已复制' : '复制内容')
+
+// 定义 props，添加 avatar 属性
+const props = defineProps({
+  message: {
+    type: Object,
+    required: true
+  },
+  avatar: {
+    type: String,
+    default: ''
+  }
+})
 
 // 配置 marked
 marked.setOptions({
@@ -92,11 +105,11 @@ const processContent = (content) => {
     ADD_TAGS: ['think', 'code', 'pre', 'span'],
     ADD_ATTR: ['class', 'language']
   })
-  
+
   // 在净化后的 HTML 中查找代码块并添加复制按钮
   const tempDiv = document.createElement('div')
   tempDiv.innerHTML = cleanHtml
-  
+
   // 查找所有代码块
   const preElements = tempDiv.querySelectorAll('pre')
   preElements.forEach(pre => {
@@ -105,7 +118,7 @@ const processContent = (content) => {
       // 创建包装器
       const wrapper = document.createElement('div')
       wrapper.className = 'code-block-wrapper'
-      
+
       // 添加复制按钮
       const copyBtn = document.createElement('button')
       copyBtn.className = 'code-copy-button'
@@ -115,22 +128,22 @@ const processContent = (content) => {
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
         </svg>
       `
-      
+
       // 添加成功消息
       const successMsg = document.createElement('div')
       successMsg.className = 'copy-success-message'
       successMsg.textContent = '已复制!'
-      
+
       // 组装结构
       wrapper.appendChild(copyBtn)
       wrapper.appendChild(pre.cloneNode(true))
       wrapper.appendChild(successMsg)
-      
+
       // 替换原始的 pre 元素
       pre.parentNode.replaceChild(wrapper, pre)
     }
   })
-  
+
   return tempDiv.innerHTML
 }
 
@@ -140,21 +153,23 @@ const processedContent = computed(() => {
   return processContent(props.message.content)
 })
 
+const isUser = computed(() => props.message.role === 'user')
+
 // 为代码块添加复制功能
 const setupCodeBlockCopyButtons = () => {
   if (!contentRef.value) return;
-  
+
   const codeBlocks = contentRef.value.querySelectorAll('.code-block-wrapper');
   codeBlocks.forEach(block => {
     const copyButton = block.querySelector('.code-copy-button');
     const codeElement = block.querySelector('code');
     const successMessage = block.querySelector('.copy-success-message');
-    
+
     if (copyButton && codeElement) {
       // 移除旧的事件监听器
       const newCopyButton = copyButton.cloneNode(true);
       copyButton.parentNode.replaceChild(newCopyButton, copyButton);
-      
+
       // 添加新的事件监听器
       newCopyButton.addEventListener('click', async (e) => {
         e.preventDefault();
@@ -162,7 +177,7 @@ const setupCodeBlockCopyButtons = () => {
         try {
           const code = codeElement.textContent || '';
           await navigator.clipboard.writeText(code);
-          
+
           // 显示成功消息
           if (successMessage) {
             successMessage.classList.add('visible');
@@ -185,27 +200,18 @@ const highlightCode = async () => {
     contentRef.value.querySelectorAll('pre code').forEach((block) => {
       hljs.highlightElement(block)
     })
-    
+
     // 设置代码块复制按钮
     setupCodeBlockCopyButtons()
   }
 }
-
-const props = defineProps({
-  message: {
-    type: Object,
-    required: true
-  }
-})
-
-const isUser = computed(() => props.message.role === 'user')
 
 // 复制内容到剪贴板
 const copyContent = async () => {
   try {
     // 获取纯文本内容
     let textToCopy = props.message.content;
-    
+
     // 如果是AI回复，需要去除HTML标签
     if (!isUser.value && contentRef.value) {
       // 创建临时元素来获取纯文本
@@ -213,10 +219,10 @@ const copyContent = async () => {
       tempDiv.innerHTML = processedContent.value;
       textToCopy = tempDiv.textContent || tempDiv.innerText || '';
     }
-    
+
     await navigator.clipboard.writeText(textToCopy);
     copied.value = true;
-    
+
     // 3秒后重置复制状态
     setTimeout(() => {
       copied.value = false;
@@ -257,16 +263,16 @@ const formatTime = (timestamp) => {
 
     .content {
       align-items: flex-end;
-      
+
       .text-container {
         position: relative;
-        
+
         .text {
           background: #f0f7ff; // 浅色背景
           color: #333;
           border-radius: 1rem 1rem 0 1rem;
         }
-        
+
         .user-copy-button {
           position: absolute;
           left: -30px;
@@ -282,23 +288,23 @@ const formatTime = (timestamp) => {
           cursor: pointer;
           opacity: 0;
           transition: opacity 0.2s;
-          
+
           .copy-icon {
             width: 16px;
             height: 16px;
             color: #666;
-            
+
             &.copied {
               color: #4ade80;
             }
           }
         }
-        
+
         &:hover .user-copy-button {
           opacity: 1;
         }
       }
-      
+
       .message-footer {
         flex-direction: row-reverse;
       }
@@ -309,6 +315,13 @@ const formatTime = (timestamp) => {
     width: 40px;
     height: 40px;
     flex-shrink: 0;
+
+    .custom-avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
 
     .icon {
       width: 100%;
@@ -335,21 +348,21 @@ const formatTime = (timestamp) => {
     flex-direction: column;
     gap: 0.25rem;
     max-width: 80%;
-    
+
     .text-container {
       position: relative;
     }
-    
+
     .message-footer {
       display: flex;
       align-items: center;
       margin-top: 0.25rem;
-      
+
       .time {
         font-size: 0.75rem;
         color: #666;
       }
-      
+
       .copy-button {
         display: flex;
         align-items: center;
@@ -363,20 +376,20 @@ const formatTime = (timestamp) => {
         cursor: pointer;
         margin-right: auto;
         transition: background-color 0.2s;
-        
+
         &:hover {
           background-color: rgba(0, 0, 0, 0.05);
         }
-        
+
         .copy-icon {
           width: 14px;
           height: 14px;
-          
+
           &.copied {
             color: #4ade80;
           }
         }
-        
+
         .copy-text {
           font-size: 0.75rem;
         }
@@ -576,11 +589,11 @@ const formatTime = (timestamp) => {
           background: #1a365d; // 暗色模式下的浅蓝色背景
           color: #fff;
         }
-        
+
         .user-copy-button {
           .copy-icon {
             color: #999;
-            
+
             &.copied {
               color: #4ade80;
             }
@@ -594,10 +607,10 @@ const formatTime = (timestamp) => {
         .time {
           color: #999;
         }
-        
+
         .copy-button {
           color: #999;
-          
+
           &:hover {
             background-color: rgba(255, 255, 255, 0.1);
           }
@@ -786,7 +799,7 @@ const formatTime = (timestamp) => {
     margin: 1rem 0;
     border-radius: 6px;
     overflow: hidden;
-    
+
     .code-copy-button {
       position: absolute;
       top: 0.5rem;
@@ -803,34 +816,34 @@ const formatTime = (timestamp) => {
       opacity: 0;
       transition: opacity 0.2s, background-color 0.2s;
       z-index: 10;
-      
+
       &:hover {
         background-color: rgba(255, 255, 255, 0.2);
       }
-      
+
       .code-copy-icon {
         width: 16px;
         height: 16px;
       }
     }
-    
+
     &:hover .code-copy-button {
       opacity: 0.8;
     }
-    
+
     pre {
       margin: 0;
       padding: 1rem;
       background: #1e1e1e;
       overflow-x: auto;
-      
+
       code {
         background: transparent;
         padding: 0;
         font-family: ui-monospace, monospace;
       }
     }
-    
+
     .copy-success-message {
       position: absolute;
       top: 0.5rem;
@@ -845,7 +858,7 @@ const formatTime = (timestamp) => {
       transition: opacity 0.3s, transform 0.3s;
       pointer-events: none;
       z-index: 20;
-      
+
       &.visible {
         opacity: 1;
         transform: translateY(0);
@@ -859,17 +872,17 @@ const formatTime = (timestamp) => {
     :deep(.code-block-wrapper) {
       .code-copy-button {
         background: rgba(255, 255, 255, 0.05);
-        
+
         &:hover {
           background-color: rgba(255, 255, 255, 0.1);
         }
       }
-      
+
       pre {
         background: #0d0d0d;
       }
     }
-    
+
     :deep(code) {
       background: rgba(255, 255, 255, 0.1);
     }

@@ -31,6 +31,7 @@
               :key="index"
               :message="message"
               :is-stream="isStreaming && index === currentMessages.length - 1"
+              :avatar="message.role === 'assistant' ? agentAvatar : undefined"
           />
         </div>
 
@@ -84,6 +85,12 @@ const router = useRouter()
 const agentBackground = computed(() => {
   const agentName = route.query.agentName
   return agentName ? `/StudentIcon/${agentName}.png` : ''
+})
+
+// 新增计算属性：根据当前选择的学生获取头像路径
+const agentAvatar = computed(() => {
+  const agentName = route.query.agentName
+  return agentName ? `/StudentIcon/1${agentName}.png` : ''
 })
 
 // Auto-adjust textarea height
