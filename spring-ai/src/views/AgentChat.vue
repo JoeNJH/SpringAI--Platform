@@ -251,7 +251,7 @@ onMounted(() => {
   }
 
   .sidebar {
-    width: 300px;
+    width: 270px;
     display: flex;
     flex-direction: column;
     background: rgba(255, 255, 255, 0.95);
