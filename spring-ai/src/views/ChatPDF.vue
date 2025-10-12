@@ -1,7 +1,7 @@
 <template>
   <div class="chat-pdf" :class="{ 'dark': isDark }">
     <div class="chat-container">
-      <!-- 左侧边栏 -->
+      <!-- Sidebar -->
       <div class="sidebar">
         <div class="sidebar-header">
           <a href="#" class="logo-link" @click="handleLogoClick">
@@ -12,105 +12,105 @@
 
         <div class="history-list">
           <div class="history-header">
-            <span>历史记录</span>
+            <span>History</span>
             <button class="new-chat-btn" @click="startNewChat">
               <PlusIcon class="icon" />
-              新聊天
+              New Chat
             </button>
           </div>
-          <div 
-            v-for="chat in chatHistory" 
-            :key="chat.id"
-            class="history-item"
-            :class="{ 'active': currentChatId === chat.id }"
-            @click="loadChat(chat.id)"
+          <div
+              v-for="chat in chatHistory"
+              :key="chat.id"
+              class="history-item"
+              :class="{ 'active': currentChatId === chat.id }"
+              @click="loadChat(chat.id)"
           >
             <DocumentTextIcon class="icon" />
-            <span class="title">{{ chat.title || 'PDF对话' }}</span>
+            <span class="title">{{ chat.title || 'PDF Chat' }}</span>
           </div>
         </div>
       </div>
-      
-      <!-- 主要内容区域 -->
+
+      <!-- Main Content Area -->
       <div class="chat-main">
-        <!-- 未上传文件时显示上传界面 -->
+        <!-- Upload interface when no file is uploaded -->
         <div v-if="!currentPdfName" class="upload-welcome">
           <h1 class="main-title">
-            与任何 <span class="highlight">PDF</span> 对话
+            Chat with any <span class="highlight">PDF</span>
           </h1>
-          <div 
-            class="drop-zone"
-            @dragover.prevent="handleDragOver"
-            @dragleave.prevent="handleDragLeave"
-            @drop.prevent="handleDrop"
-            :class="{ 
+          <div
+              class="drop-zone"
+              @dragover.prevent="handleDragOver"
+              @dragleave.prevent="handleDragLeave"
+              @drop.prevent="handleDrop"
+              :class="{
               'dragging': isDragging,
-              'uploading': isUploading 
+              'uploading': isUploading
             }"
           >
             <div class="upload-content">
-              <!-- 添加上传状态显示 -->
+              <!-- Upload status display -->
               <div v-if="isUploading" class="upload-status">
                 <div class="spinner"></div>
                 <div class="upload-progress">
-                  <p class="status-text">正在上传文件...</p>
+                  <p class="status-text">Uploading file...</p>
                   <p class="filename">{{ uploadingFileName }}</p>
                 </div>
               </div>
               <template v-else>
                 <DocumentArrowUpIcon class="upload-icon" />
-                <p class="upload-text">点击上传，或将PDF拖拽到此处</p>
-                <input 
-                  type="file"
-                  accept=".pdf"
-                  @change="handleFileUpload"
-                  :disabled="isUploading"
-                  class="file-input"
+                <p class="upload-text">Click to upload or drag PDF here</p>
+                <input
+                    type="file"
+                    accept=".pdf"
+                    @change="handleFileUpload"
+                    :disabled="isUploading"
+                    class="file-input"
                 >
-                <button 
-                  class="upload-button"
-                  :class="{ 'uploading': isUploading }"
-                  @click="triggerFileInput"
+                <button
+                    class="upload-button"
+                    :class="{ 'uploading': isUploading }"
+                    @click="triggerFileInput"
                 >
                   <ArrowUpTrayIcon class="icon" />
-                  上传PDF
+                  Upload PDF
                 </button>
               </template>
             </div>
           </div>
         </div>
 
-        <!-- 已上传文件时显示分栏界面 -->
+        <!-- Split view when file is uploaded -->
         <div v-else class="split-view">
-          <!-- PDF 预览组件 -->
-          <PDFViewer 
-            :file="pdfFile"
-            :fileName="currentPdfName"
+          <!-- PDF Viewer Component -->
+          <PDFViewer
+              :file="pdfFile"
+              :fileName="currentPdfName"
           />
 
-          <!-- 聊天区域 -->
+          <!-- Chat Area -->
           <div class="chat-view">
             <div class="messages" ref="messagesRef">
               <ChatMessage
-                v-for="(message, index) in currentMessages"
-                :key="index"
-                :message="message"
-                :is-stream="isStreaming && index === currentMessages.length - 1"
+                  v-for="(message, index) in currentMessages"
+                  :key="index"
+                  :message="message"
+                  :is-stream="isStreaming && index === currentMessages.length - 1"
               />
             </div>
-            
+
             <div class="input-area">
               <textarea
-                v-model="userInput"
-                @keydown.enter.prevent="sendMessage()"
-                placeholder="请输入您的问题..."
-                rows="1"
-                ref="inputRef"
+                  v-model="userInput"
+                  @keydown.enter.prevent="sendMessage()"
+                  placeholder="Enter your question..."
+                  rows="1"
+                  ref="inputRef"
               ></textarea>
-              <button 
-                class="send-button" 
-                @click="sendMessage()"
-                :disabled="isStreaming || !userInput.trim()"
+              <button
+                  class="send-button"
+                  @click="sendMessage()"
+                  :disabled="isStreaming || !userInput.trim()"
               >
                 <PaperAirplaneIcon class="icon" />
               </button>
