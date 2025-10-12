@@ -347,10 +347,10 @@ onMounted(() => {
       flex: 1;
       overflow-y: auto;
       padding: 2rem;
-      background: rgba(255, 255, 255, 0.7); // 半透明背景使消息更易读
+      background: rgba(255, 255, 255, 0.9); // 半透明背景使消息更易读
 
       .dark & {
-        background: rgba(40, 40, 40, 0.7); // 暗色模式下的半透明背景
+        background: rgba(40, 40, 40, 0.9); // 暗色模式下的半透明背景
       }
     }
 
