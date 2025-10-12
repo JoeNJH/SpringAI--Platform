@@ -86,7 +86,7 @@ const goToRag = () => {
 <style scoped lang="scss">
 .home {
   min-height: 100vh;
-  padding: 2rem;
+  padding: 0.3rem;
   background: var(--bg-color);
   transition: background-color 0.3s;
 
