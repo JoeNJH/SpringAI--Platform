@@ -31,6 +31,13 @@ spring:
         stdio:
           servers-configuration: classpath:/mcp/mcp-servers-config.json
 
+    # 引入阿里巴巴百炼平台
+    dashscope:
+      api-key: ${ALI_API_KEY}
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+      chat:
+        options:
+          model: qwen-plus
 
   data:
     redis:
