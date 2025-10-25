@@ -1,5 +1,6 @@
 package com.example.springai.config;
 
+import com.alibaba.cloud.ai.dashscope.chat.DashScopeChatModel;
 import com.example.springai.constants.StudentPrompt;
 import com.example.springai.constants.SystemConstants;
 import com.example.springai.tools.CourseTools;
@@ -174,5 +175,16 @@ public class CommonConfiguration {
                 )
                 .build();
     }
+
+
+    //  引入阿里百炼平台
+
+    @Bean
+    public ChatClient alibabaChatClient(DashScopeChatModel dashScopeChatModel){
+
+        return ChatClient.builder(dashScopeChatModel).build();
+
+    }
+
 
 }
