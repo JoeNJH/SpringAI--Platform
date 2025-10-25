@@ -11,6 +11,7 @@ import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
+import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.rag.advisor.RetrievalAugmentationAdvisor;
 import org.springframework.ai.rag.preretrieval.query.transformation.RewriteQueryTransformer;
@@ -177,12 +178,12 @@ public class CommonConfiguration {
     }
 
 
-    //  引入阿里百炼平台
+    //  引入阿里百炼平台  加入模型随意切换
 
     @Bean
     public ChatClient alibabaChatClient(DashScopeChatModel dashScopeChatModel){
 
-        return ChatClient.builder(dashScopeChatModel).build();
+        return ChatClient.builder(dashScopeChatModel).defaultOptions(ChatOptions.builder().model("deepseek-v3").build()).build();
 
     }
 
