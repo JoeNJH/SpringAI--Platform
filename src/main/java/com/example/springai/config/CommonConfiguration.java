@@ -178,12 +178,12 @@ public class CommonConfiguration {
     }
 
 
-    //  引入阿里百炼平台  加入模型随意切换
+    //  引入阿里百炼平台
 
     @Bean
     public ChatClient alibabaChatClient(DashScopeChatModel dashScopeChatModel){
 
-        return ChatClient.builder(dashScopeChatModel).defaultOptions(ChatOptions.builder().model("deepseek-v3").build()).build();
+        return ChatClient.builder(dashScopeChatModel).build();
 
     }
 
