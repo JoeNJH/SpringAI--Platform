@@ -57,7 +57,7 @@ public class AliTest {
 
     // 语音合成
     public String TextToSpeech(String prompt){
-        String filepath = UUID.randomUUID()+ ".mp3";
+        String filepath = "Voice/"+UUID.randomUUID()+ ".mp3";
 
         DashScopeSpeechSynthesisOptions options = DashScopeSpeechSynthesisOptions.builder()
                 .model(BAILIAN_VOICE_MODEL)
