@@ -67,6 +67,9 @@ const ttsButtonTitle = computed(() => {
   return isPlaying.value ? '暂停' : '播放'
 })
 
+// TTS缓存Map
+const ttsCache = new Map()
+
 // 定义 props，添加 avatar 属性
 const props = defineProps({
   message: {
@@ -283,6 +286,36 @@ const playTTS = async () => {
     }
   }
 
+  // 检查缓存中是否已有该文本的音频
+  const cacheKey = props.message.content;
+  if (ttsCache.has(cacheKey)) {
+    const cachedAudioUrl = ttsCache.get(cacheKey);
+
+    // 创建或更新音频元素
+    if (!audioElement.value) {
+      audioElement.value = new Audio();
+
+      // 监听播放结束事件
+      audioElement.value.addEventListener('ended', () => {
+        isPlaying.value = false;
+      });
+
+      // 监听播放/暂停事件
+      audioElement.value.addEventListener('play', () => {
+        isPlaying.value = true;
+      });
+
+      audioElement.value.addEventListener('pause', () => {
+        isPlaying.value = false;
+      });
+    }
+
+    audioElement.value.src = cachedAudioUrl;
+    await audioElement.value.play();
+    isPlaying.value = true;
+    return;
+  }
+
   // 否则获取新的音频并播放
   ttsLoading.value = true;
 
@@ -301,6 +334,9 @@ const playTTS = async () => {
     const audioData = await chatAPI.textToSpeech(textToSpeak);
     const audioBlob = new Blob([audioData], { type: 'audio/mpeg' });
     const audioUrl = URL.createObjectURL(audioBlob);
+
+    // 缓存音频URL
+    ttsCache.set(cacheKey, audioUrl);
 
     // 创建或更新音频元素
     if (!audioElement.value) {
