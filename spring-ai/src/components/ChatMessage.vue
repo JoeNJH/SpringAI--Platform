@@ -21,6 +21,17 @@
           <DocumentDuplicateIcon v-if="!copied" class="copy-icon" />
           <CheckIcon v-else class="copy-icon copied" />
         </button>
+        <!-- 添加TTS播放按钮 -->
+        <button
+            class="tts-button"
+            @click="playTTS"
+            :title="ttsButtonTitle"
+            :disabled="ttsLoading"
+        >
+          <PlayIcon v-if="!isPlaying && !ttsLoading" class="tts-icon" />
+          <PauseIcon v-else-if="isPlaying && !ttsLoading" class="tts-icon" />
+          <ArrowPathIcon v-else class="tts-icon spinning" />
+        </button>
       </div>
     </div>
   </div>
@@ -30,13 +41,31 @@
 import { computed, onMounted, nextTick, ref, watch } from 'vue'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
-import { UserCircleIcon, ComputerDesktopIcon, DocumentDuplicateIcon, CheckIcon } from '@heroicons/vue/24/outline'
+import {
+  UserCircleIcon,
+  ComputerDesktopIcon,
+  DocumentDuplicateIcon,
+  CheckIcon,
+  PlayIcon,
+  PauseIcon,
+  ArrowPathIcon
+} from '@heroicons/vue/24/outline'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github-dark.css'
+import { chatAPI } from '../services/api'
 
 const contentRef = ref(null)
 const copied = ref(false)
 const copyButtonTitle = computed(() => copied.value ? '已复制' : '复制内容')
+
+// TTS相关状态
+const isPlaying = ref(false)
+const ttsLoading = ref(false)
+const audioElement = ref(null)
+const ttsButtonTitle = computed(() => {
+  if (ttsLoading.value) return '加载中...'
+  return isPlaying.value ? '暂停' : '播放'
+})
 
 // 定义 props，添加 avatar 属性
 const props = defineProps({
@@ -232,6 +261,77 @@ const copyContent = async () => {
   }
 }
 
+// 播放TTS功能
+const playTTS = async () => {
+  // 如果正在播放，则暂停
+  if (isPlaying.value) {
+    if (audioElement.value) {
+      audioElement.value.pause();
+    }
+    isPlaying.value = false;
+    return;
+  }
+
+  // 如果已经有音频元素但已暂停，则继续播放
+  if (audioElement.value && audioElement.value.paused) {
+    try {
+      await audioElement.value.play();
+      isPlaying.value = true;
+      return;
+    } catch (err) {
+      console.error('播放失败:', err);
+    }
+  }
+
+  // 否则获取新的音频并播放
+  ttsLoading.value = true;
+
+  try {
+    // 获取纯文本内容
+    let textToSpeak = props.message.content;
+
+    if (!isUser.value && contentRef.value) {
+      // 创建临时元素来获取纯文本
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = processedContent.value;
+      textToSpeak = tempDiv.textContent || tempDiv.innerText || '';
+    }
+
+    // 调用后端TTS接口
+    const audioData = await chatAPI.textToSpeech(textToSpeak);
+    const audioBlob = new Blob([audioData], { type: 'audio/mpeg' });
+    const audioUrl = URL.createObjectURL(audioBlob);
+
+    // 创建或更新音频元素
+    if (!audioElement.value) {
+      audioElement.value = new Audio();
+
+      // 监听播放结束事件
+      audioElement.value.addEventListener('ended', () => {
+        isPlaying.value = false;
+      });
+
+      // 监听播放/暂停事件
+      audioElement.value.addEventListener('play', () => {
+        isPlaying.value = true;
+      });
+
+      audioElement.value.addEventListener('pause', () => {
+        isPlaying.value = false;
+      });
+    }
+
+    audioElement.value.src = audioUrl;
+    await audioElement.value.play();
+    isPlaying.value = true;
+  } catch (err) {
+    console.error('TTS播放失败:', err);
+    alert('语音播放失败，请稍后重试');
+  } finally {
+    ttsLoading.value = false;
+  }
+}
+
 // 监听内容变化
 watch(() => props.message.content, () => {
   if (!isUser.value) {
@@ -363,7 +463,8 @@ const formatTime = (timestamp) => {
         color: #666;
       }
 
-      .copy-button {
+      .copy-button,
+      .tts-button {
         display: flex;
         align-items: center;
         gap: 0.25rem;
@@ -381,7 +482,8 @@ const formatTime = (timestamp) => {
           background-color: rgba(0, 0, 0, 0.05);
         }
 
-        .copy-icon {
+        .copy-icon,
+        .tts-icon {
           width: 14px;
           height: 14px;
 
@@ -393,6 +495,15 @@ const formatTime = (timestamp) => {
         .copy-text {
           font-size: 0.75rem;
         }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+
+      .tts-button {
+        margin-left: 0.5rem;
       }
     }
 
@@ -570,6 +681,19 @@ const formatTime = (timestamp) => {
   }
 }
 
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
 .dark {
   .message {
     .avatar .icon {
@@ -608,7 +732,8 @@ const formatTime = (timestamp) => {
           color: #999;
         }
 
-        .copy-button {
+        .copy-button,
+        .tts-button {
           color: #999;
 
           &:hover {

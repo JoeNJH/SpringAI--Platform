@@ -8,8 +8,7 @@ import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.ChatOptions;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 import java.io.FileOutputStream;
@@ -20,7 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/a")
+@RequestMapping("/api")
 public class AliTest {
 
     private final ChatClient alibabaChatClient;
@@ -77,6 +76,24 @@ public class AliTest {
         }
 
         return filepath;
+    }
+
+    public byte[] TextToSpeechBytes(String prompt) {
+        DashScopeSpeechSynthesisOptions options = DashScopeSpeechSynthesisOptions.builder()
+                .model(BAILIAN_VOICE_MODEL)
+                .voice(BAILIAN_VOICE_TIMBER)
+                .build();
+
+        SpeechSynthesisResponse resp =
+                speechSynthesisModel.call(new SpeechSynthesisPrompt(prompt, options));
+
+        ByteBuffer audio = resp.getResult().getOutput().getAudio();
+        return audio.array(); // 直接返回二进制
+    }
+
+    @PostMapping(value="/tts-bytes", consumes="text/plain", produces="audio/mpeg")
+    public @ResponseBody byte[] ttsReturnBytes(@RequestBody String text) {
+        return TextToSpeechBytes(text);
     }
 
 

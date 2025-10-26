@@ -8,11 +8,11 @@ export const chatAPI = {
       if (chatId) {
         url.searchParams.append('chatId', chatId)
       }
-      
+
       const response = await fetch(url, {
         method: 'POST',
-        body: data instanceof FormData ? data : 
-          new URLSearchParams({ prompt: data })
+        body: data instanceof FormData ? data :
+            new URLSearchParams({ prompt: data })
       })
 
       if (!response.ok) {
@@ -147,5 +147,27 @@ export const chatAPI = {
       console.error('API Error:', error)
       throw error
     }
+  },
+
+  // TTS语音合成接口
+  async textToSpeech(text) {
+    try {
+      const response = await fetch(`${BASE_URL}/api/tts-bytes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain'
+        },
+        body: text
+      });
+
+      if (!response.ok) {
+        throw new Error(`TTS请求失败: ${response.status}`);
+      }
+
+      return await response.arrayBuffer();
+    } catch (error) {
+      console.error('TTS API Error:', error);
+      throw error;
+    }
   }
-} 
+}
