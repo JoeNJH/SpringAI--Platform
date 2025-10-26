@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RequiredArgsConstructor
 @RestController
@@ -36,15 +37,26 @@ public class AliTest {
     @RequestMapping(value = "/test",produces = "text/html;charset=utf-8")
     public Flux<String> chat1(){
 
+        // 用于累积整段回复（线程安全这里用 AtomicReference<StringBuilder> 简单处理）
+        AtomicReference<StringBuilder> bufferRef = new AtomicReference<>(new StringBuilder(1024));
+
+
         return alibabaChatClient.prompt().options(ChatOptions.builder().model("deepseek-v3").build())
                 .user("你是谁？")
                 .stream()
-                .content();
+                .content()
+                .doOnNext(chunk -> bufferRef.get().append(chunk))
+                .doOnComplete(() -> {
+                    StringBuilder buffer = bufferRef.get();
+                    String result = buffer.toString();
+                    System.out.println(result);
+                    String textToSpeech = TextToSpeech(result);
+                    System.out.println(textToSpeech);
+                });
     }
 
     // 语音合成
-    @RequestMapping(value = "/voice")
-    public String voice(){
+    public String TextToSpeech(String prompt){
         String filepath = UUID.randomUUID()+ ".mp3";
 
         DashScopeSpeechSynthesisOptions options = DashScopeSpeechSynthesisOptions.builder()
@@ -52,7 +64,7 @@ public class AliTest {
                 .voice(BAILIAN_VOICE_TIMBER)
                 .build();
 
-        SpeechSynthesisResponse response = speechSynthesisModel.call(new SpeechSynthesisPrompt("你好，欢迎使用阿里百炼！", options));
+        SpeechSynthesisResponse response = speechSynthesisModel.call(new SpeechSynthesisPrompt(prompt, options));
 
         ByteBuffer audio = response.getResult().getOutput().getAudio();
 
@@ -63,9 +75,7 @@ public class AliTest {
             throw new RuntimeException(e);
         }
 
-
         return filepath;
-
     }
 
 
