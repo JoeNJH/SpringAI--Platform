@@ -38,7 +38,7 @@ public class AliTest {
     public Flux<String> chat1(){
 
         // 用于累积整段回复（线程安全这里用 AtomicReference<StringBuilder> 简单处理）
-        AtomicReference<StringBuilder> bufferRef = new AtomicReference<>(new StringBuilder(1024));
+        AtomicReference<StringBuilder> bufferRef = new AtomicReference<>(new StringBuilder(2048));
 
 
         return alibabaChatClient.prompt().options(ChatOptions.builder().model("deepseek-v3").build())
