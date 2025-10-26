@@ -66,6 +66,7 @@ public class AliTest {
 
         SpeechSynthesisResponse response = speechSynthesisModel.call(new SpeechSynthesisPrompt(prompt, options));
 
+        // 获取到音频数据
         ByteBuffer audio = response.getResult().getOutput().getAudio();
 
         try (FileOutputStream fileOutputStream = new FileOutputStream(filepath))
