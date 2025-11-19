@@ -6,7 +6,7 @@
         <div class="sidebar-header">
           <a href="#" class="logo-link" @click="handleLogoClick">
             <DocumentTextIcon class="logo" />
-            <h1 class="title">ChatPDF</h1>
+            <h1 class="title">Chat RAG</h1>
           </a>
         </div>
 
@@ -36,7 +36,7 @@
         <!-- Upload interface when no file is uploaded -->
         <div v-if="!currentPdfName" class="upload-welcome">
           <h1 class="main-title">
-            Chat with any <span class="highlight">PDF</span>
+            Chat with <span class="highlight">RAG</span>
           </h1>
           <div
               class="drop-zone"

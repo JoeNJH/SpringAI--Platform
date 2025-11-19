@@ -7,10 +7,10 @@ spring:
       base-url: https://generativelanguage.googleapis.com/v1beta/openai/
       chat:
         options:
-          model: gemini-2.5-flash
+          model: gemini-2.5-flash  # 主要对话模型
       embedding:
         options:
-          model: gemini-embedding-001
+          model: gemini-embedding-001 # 嵌入模型
           dimensions: 1536
     vectorstore:
       qdrant:
@@ -37,7 +37,7 @@ spring:
       base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
       chat:
         options:
-          model: qwen-plus
+          model: qwen-plus  # 次要对话模型
 
   data:
     redis:
