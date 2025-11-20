@@ -104,7 +104,7 @@ public class CommonConfiguration {
                         RetrievalAugmentationAdvisor.builder()
                                 .documentRetriever(VectorStoreDocumentRetriever.builder()
                                         .similarityThreshold(0.50)
-                                        .topK(8)
+                                        .topK(5)
                                         .vectorStore(vectorStore)
                                         .build())
                                 // 查询重写
