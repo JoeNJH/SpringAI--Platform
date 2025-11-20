@@ -81,6 +81,7 @@ public class CommonConfiguration {
                         new SimpleLoggerAdvisor(),
                         MessageChatMemoryAdvisor.builder(chatMemory).build()
                 )
+                // 工具tool calling
                 .defaultTools(courseTools)
                 .build();
     }
