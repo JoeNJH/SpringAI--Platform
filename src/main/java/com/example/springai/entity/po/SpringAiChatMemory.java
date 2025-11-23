@@ -25,6 +25,10 @@ public class SpringAiChatMemory implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 主键
+     */
+    @TableId(type = IdType.NONE)
     private String conversationId;
 
     private String content;

@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
+import com.example.springai.constants.StudentPrompt;
+
 
 @RequiredArgsConstructor
 @RestController
@@ -16,13 +18,7 @@ import reactor.core.publisher.Flux;
 public class AgentController {
 
 
-    private final ChatClient Agent1ChatClient;
-
-    private final ChatClient Agent2ChatClient;
-
-    private final ChatClient Agent3ChatClient;
-
-    private final ChatClient Agent4ChatClient;
+    private final ChatClient StudentAgentChatClient;
 
     private final ChatHistoryRepository chatHistoryRepository;
 
@@ -33,7 +29,8 @@ public class AgentController {
         // 1 存储会话ID
         chatHistoryRepository.save("agent",chatId);
 
-        return Agent1ChatClient.prompt()
+        return StudentAgentChatClient.prompt()
+                .system(StudentPrompt.PROMPT1)
                 .user(prompt)
                 .advisors(a->a.param(ChatMemory.CONVERSATION_ID,chatId))
                 .stream()
@@ -48,7 +45,8 @@ public class AgentController {
         // 1 存储会话ID
         chatHistoryRepository.save("agent",chatId);
 
-        return Agent2ChatClient.prompt()
+        return StudentAgentChatClient.prompt()
+                .system(StudentPrompt.PROMPT2)
                 .user(prompt)
                 .advisors(a->a.param(ChatMemory.CONVERSATION_ID,chatId))
                 .stream()
@@ -63,7 +61,8 @@ public class AgentController {
         // 1 存储会话ID
         chatHistoryRepository.save("agent",chatId);
 
-        return Agent3ChatClient.prompt()
+        return StudentAgentChatClient.prompt()
+                .system(StudentPrompt.PROMPT3)
                 .user(prompt)
                 .advisors(a->a.param(ChatMemory.CONVERSATION_ID,chatId))
                 .stream()
@@ -79,7 +78,8 @@ public class AgentController {
         // 1 存储会话ID
         chatHistoryRepository.save("agent",chatId);
 
-        return Agent4ChatClient.prompt()
+        return StudentAgentChatClient.prompt()
+                .system(StudentPrompt.PROMPT4)
                 .user(prompt)
                 .advisors(a->a.param(ChatMemory.CONVERSATION_ID,chatId))
                 .stream()

@@ -1,7 +1,6 @@
 package com.example.springai.config;
 
 import com.alibaba.cloud.ai.dashscope.chat.DashScopeChatModel;
-import com.example.springai.constants.StudentPrompt;
 import com.example.springai.constants.SystemConstants;
 import com.example.springai.tools.CourseTools;
 import org.springframework.ai.chat.client.ChatClient;
@@ -118,58 +117,12 @@ public class CommonConfiguration {
     }
 
 
-
-    /// 模拟学生的客户端配置 4种不同学生
-
-    //   模拟学生的客户端配置1
+    //   模拟学生的客户端配置
 
     @Bean
-    public ChatClient Agent1ChatClient(OpenAiChatModel model, ChatMemory chatMemory){
+    public ChatClient StudentAgentChatClient(OpenAiChatModel model, ChatMemory chatMemory){
 
         return ChatClient.builder(model)
-                .defaultSystem(StudentPrompt.PROMPT1)
-                .defaultAdvisors(
-                        new SimpleLoggerAdvisor(),
-                        MessageChatMemoryAdvisor.builder(chatMemory).build()
-                )
-                .build();
-    }
-
-    //   模拟学生的客户端配置2
-
-    @Bean
-    public ChatClient Agent2ChatClient(OpenAiChatModel model, ChatMemory chatMemory){
-
-        return ChatClient.builder(model)
-                .defaultSystem(StudentPrompt.PROMPT2)
-                .defaultAdvisors(
-                        new SimpleLoggerAdvisor(),
-                        MessageChatMemoryAdvisor.builder(chatMemory).build()
-                )
-                .build();
-    }
-
-    //   模拟学生的客户端配置3
-
-    @Bean
-    public ChatClient Agent3ChatClient(OpenAiChatModel model, ChatMemory chatMemory){
-
-        return ChatClient.builder(model)
-                .defaultSystem(StudentPrompt.PROMPT3)
-                .defaultAdvisors(
-                        new SimpleLoggerAdvisor(),
-                        MessageChatMemoryAdvisor.builder(chatMemory).build()
-                )
-                .build();
-    }
-
-    //   模拟学生的客户端配置4
-
-    @Bean
-    public ChatClient Agent4ChatClient(OpenAiChatModel model, ChatMemory chatMemory){
-
-        return ChatClient.builder(model)
-                .defaultSystem(StudentPrompt.PROMPT4)
                 .defaultAdvisors(
                         new SimpleLoggerAdvisor(),
                         MessageChatMemoryAdvisor.builder(chatMemory).build()
