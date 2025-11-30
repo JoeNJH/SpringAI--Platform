@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author uqjoe
- * @since 2025-09-29
+ * @since 2025-11-30
  */
 public interface IUserChatindexService extends IService<UserChatindex> {
 
