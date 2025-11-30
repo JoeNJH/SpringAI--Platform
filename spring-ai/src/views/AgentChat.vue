@@ -194,7 +194,9 @@ const loadChat = async (chatId) => {
 // Load chat history
 const loadChatHistory = async () => {
   try {
-    const history = await chatAPI.getChatHistory('agent')
+    // 使用新的按agentId查询历史记录的接口
+    const history = await chatAPI.getChatHistoryByAgentId(route.query.agentId)
+    console.log('Chat history response:', history)
     chatHistory.value = history || []
     if (history && history.length > 0) {
       await loadChat(history[0].id)

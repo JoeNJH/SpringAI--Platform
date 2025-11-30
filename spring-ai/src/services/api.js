@@ -73,6 +73,25 @@ export const chatAPI = {
     }
   },
 
+  // 新增：根据agentId获取聊天历史列表
+  async getChatHistoryByAgentId(agentId) {
+    try {
+      const response = await fetch(`${BASE_URL}/ai/history/api/${agentId}`)
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      const chatIds = await response.json()
+      // 转换为前端需要的格式，与原接口保持一致
+      return chatIds.map(id => ({
+        id,
+        title: `Agent Chat ${id.slice(-6)}`
+      }))
+    } catch (error) {
+      console.error('API Error:', error)
+      return []
+    }
+  },
+
   // 获取特定对话的消息历史
   async getChatMessages(chatId, type = 'chat') {  // 添加类型参数
     try {
@@ -181,7 +200,7 @@ export const chatAPI = {
       const agents = await response.json();
       // Transform to match frontend expectations
       return agents.map(agent => ({
-        id: agent.agentid,
+        id: agent.agentId,
         title: agent.name,
         description: agent.description
       }));
