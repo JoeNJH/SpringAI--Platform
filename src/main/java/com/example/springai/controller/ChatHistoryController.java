@@ -28,6 +28,14 @@ public class ChatHistoryController {
 
     }
 
+    @GetMapping("/api/{agentId}")
+    public List<String> getAgentChatIds(@PathVariable("agentId") String agentId){
+
+        return chatHistoryRepository.getAgentChatIds(agentId);
+
+    }
+
+
     @GetMapping("/{type}/{chatId}")
     public List<MessageVO> getChatHistory(@PathVariable("type") String type, @PathVariable("chatId") String chatId){
         List<Message> messages = chatMemory.get(chatId);
