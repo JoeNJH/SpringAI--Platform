@@ -169,5 +169,25 @@ export const chatAPI = {
       console.error('TTS API Error:', error);
       throw error;
     }
+  },
+
+  // Get all Agents list
+  async getAllAgents() {
+    try {
+      const response = await fetch(`${BASE_URL}/agent/all`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const agents = await response.json();
+      // Transform to match frontend expectations
+      return agents.map(agent => ({
+        id: agent.agentid,
+        title: agent.name,
+        description: agent.description
+      }));
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
   }
 }

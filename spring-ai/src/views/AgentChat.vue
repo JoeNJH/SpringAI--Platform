@@ -222,9 +222,9 @@ const startNewChat = () => {
   chatHistory.value = [newChat, ...chatHistory.value]
 }
 
-// Watch route changes
-watch(() => route.query, () => {
-  if (route.query.type === 'agent' && route.query.agentId) {
+// Fixed route watcher - simplified condition to check for agent type
+watch(() => route.query, (newQuery) => {
+  if (newQuery.type === 'agent') {
     loadChatHistory()
   }
 }, { immediate: true })

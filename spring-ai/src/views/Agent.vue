@@ -10,11 +10,6 @@
             @click="selectAgent(agent)"
         >
           <div class="card-content">
-            <img
-                :src="getAgentIcon(agent.title)"
-                :alt="agent.title"
-                class="agent-image"
-            />
             <h2>{{ agent.title }}</h2>
             <p>{{ agent.description }}</p>
           </div>
@@ -32,39 +27,28 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useDark } from '@vueuse/core'
 import { useRouter } from 'vue-router'
+import { chatAPI } from '../services/api'
 
 const isDark = useDark()
 const router = useRouter()
 
-const agents = ref([
-  {
-    id: 1,
-    title: 'Avery',
-    description: 'A student with many ideas but cannot decide what to write about'
-  },
-  {
-    id: 2,
-    title: 'Jasmine',
-    description: 'A student who is sensitive to writing feedback'
-  },
-  {
-    id: 3,
-    title: 'Kai',
-    description: 'A student who is distracted and off-task'
-  },
-  {
-    id: 4,
-    title: 'Miles',
-    description: 'A student who does not like writing and does not want to participate'
-  }
-])
+// Add the missing agents ref declaration here
+const agents = ref([])
 
-const getAgentIcon = (name) => {
-  return `/StudentIcon/${name}.png`
-}
+// Fetch agents from backend API
+const fetchAgents = async () => {
+  try {
+    const agentList = await chatAPI.getAllAgents();
+    if (agentList && agentList.length > 0) {
+      agents.value = agentList;
+    }
+  } catch (error) {
+    console.error('Failed to fetch agents:', error);
+  }
+};
 
 const selectAgent = (agent) => {
   router.push({
@@ -77,10 +61,15 @@ const selectAgent = (agent) => {
   })
 }
 
-// 新增方法：跳转到RAG页面
+// New method: navigate to RAG page
 const goToRag = () => {
   window.location.href = 'http://localhost:5173/chat-pdf'
 }
+
+// Fetch agents when component mounts
+onMounted(() => {
+  fetchAgents();
+});
 </script>
 
 <style scoped lang="scss">
@@ -158,19 +147,6 @@ const goToRag = () => {
       text-align: center;
     }
 
-    .agent-image {
-      width: 100%;
-      height: 300px;
-      object-fit: cover;
-      margin-bottom: 1rem;
-      border-radius: 10px;
-      transition: transform 0.3s ease;
-    }
-
-    &:hover .agent-image {
-      transform: scale(1.05);
-    }
-
     h2 {
       font-size: 1.5rem;
       margin-bottom: 0.5rem;
@@ -186,16 +162,16 @@ const goToRag = () => {
     }
   }
 
-  // 添加RAG按钮容器样式
+  // RAG button container style
   .rag-button-container {
     display: flex;
     justify-content: center;
     margin-top: 2rem;
   }
 
-  // 添加RAG按钮样式
+  // RAG button style
   .rag-button {
-    background: linear-gradient(45deg, #8a2be2, #9370db); // 紫色渐变
+    background: linear-gradient(45deg, #8a2be2, #9370db); // Purple gradient
     color: white;
     border: none;
     padding: 12px 30px;
