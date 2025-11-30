@@ -12,4 +12,7 @@ public interface ChatHistoryRepository {
 
     // 按照agnet对象查询会话ID
     List<String> getAgentChatIds(String agentId);
+
+    // agent信息单独存储
+    void saveAgent(String chatId, String agentId);
 }

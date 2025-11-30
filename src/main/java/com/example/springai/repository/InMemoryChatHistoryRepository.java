@@ -37,4 +37,25 @@ public class InMemoryChatHistoryRepository implements ChatHistoryRepository{
                 .eq(UserChatindex::getType, type).list()
                  .stream().map(UserChatindex::getConversationId).toList();
     }
+
+    @Override
+    public List<String> getAgentChatIds(String agentId) {
+
+        return userChatindexService.lambdaQuery().select(UserChatindex::getConversationId)
+                .eq(UserChatindex::getAgentId, agentId).list()
+                .stream().map(UserChatindex::getConversationId).toList();
+    }
+
+    @Override
+    public void saveAgent(String chatId, String agentId) {
+        if(userChatindexMapper.selectById(chatId) != null) {
+            return;
+        }
+        UserChatindex userChatindex = new UserChatindex();
+        userChatindex.setConversationId(chatId);
+        userChatindex.setAgentId(agentId);
+        userChatindex.setType("agent");
+        userChatindex.setUid(1);    // 固定的UserId
+        userChatindexService.save(userChatindex);
+    }
 }

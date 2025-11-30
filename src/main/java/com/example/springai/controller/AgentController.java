@@ -32,12 +32,14 @@ public class AgentController {
         return iAgentService.lambdaQuery().list();
     }
 
-    @RequestMapping(value = "/chat/1",produces = "text/html;charset=utf-8")
-    public Flux<String> chat1(@RequestParam("prompt") String prompt,
-                             @RequestParam("chatId") String chatId){
+    @RequestMapping(value = "/chat/{agentId}",produces = "text/html;charset=utf-8")
+    public Flux<String> chat(
+            @PathVariable("agentId") String agentId,
+            @RequestParam("prompt") String prompt,
+            @RequestParam("chatId") String chatId){
 
         // 1 存储会话ID
-        chatHistoryRepository.save("agent",chatId);
+        chatHistoryRepository.saveAgent(chatId,agentId);
 
         return StudentAgentChatClient.prompt()
                 .system(StudentPrompt.PROMPT1)
@@ -47,56 +49,5 @@ public class AgentController {
                 .content();
 
     }
-
-    @RequestMapping(value = "/chat/2",produces = "text/html;charset=utf-8")
-    public Flux<String> chat2(@RequestParam("prompt") String prompt,
-                             @RequestParam("chatId") String chatId){
-
-        // 1 存储会话ID
-        chatHistoryRepository.save("agent",chatId);
-
-        return StudentAgentChatClient.prompt()
-                .system(StudentPrompt.PROMPT2)
-                .user(prompt)
-                .advisors(a->a.param(ChatMemory.CONVERSATION_ID,chatId))
-                .stream()
-                .content();
-
-    }
-
-    @RequestMapping(value = "/chat/3",produces = "text/html;charset=utf-8")
-    public Flux<String> chat3(@RequestParam("prompt") String prompt,
-                             @RequestParam("chatId") String chatId){
-
-        // 1 存储会话ID
-        chatHistoryRepository.save("agent",chatId);
-
-        return StudentAgentChatClient.prompt()
-                .system(StudentPrompt.PROMPT3)
-                .user(prompt)
-                .advisors(a->a.param(ChatMemory.CONVERSATION_ID,chatId))
-                .stream()
-                .content();
-
-    }
-
-
-    @RequestMapping(value = "/chat/4",produces = "text/html;charset=utf-8")
-    public Flux<String> chat(@RequestParam("prompt") String prompt,
-                             @RequestParam("chatId") String chatId){
-
-        // 1 存储会话ID
-        chatHistoryRepository.save("agent",chatId);
-
-        return StudentAgentChatClient.prompt()
-                .system(StudentPrompt.PROMPT4)
-                .user(prompt)
-                .advisors(a->a.param(ChatMemory.CONVERSATION_ID,chatId))
-                .stream()
-                .content();
-
-    }
-
-
 
 }
