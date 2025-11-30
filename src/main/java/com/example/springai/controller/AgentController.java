@@ -1,15 +1,17 @@
 package com.example.springai.controller;
 
 
+import com.example.springai.entity.po.Agent;
 import com.example.springai.repository.ChatHistoryRepository;
+import com.example.springai.service.IAgentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import com.example.springai.constants.StudentPrompt;
+
+import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -21,6 +23,14 @@ public class AgentController {
     private final ChatClient StudentAgentChatClient;
 
     private final ChatHistoryRepository chatHistoryRepository;
+
+    private final IAgentService iAgentService;
+
+    @GetMapping("/all")
+    public List<Agent> getChatIds(){
+
+        return iAgentService.lambdaQuery().list();
+    }
 
     @RequestMapping(value = "/chat/1",produces = "text/html;charset=utf-8")
     public Flux<String> chat1(@RequestParam("prompt") String prompt,
