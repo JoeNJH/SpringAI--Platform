@@ -9,7 +9,6 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
-import com.example.springai.constants.StudentPrompt;
 
 import java.util.List;
 
@@ -41,8 +40,11 @@ public class AgentController {
         // 1 存储会话ID
         chatHistoryRepository.saveAgent(chatId,agentId);
 
+        Agent agentDiy = iAgentService.lambdaQuery()
+                .select(Agent::getPrompt).eq(Agent::getAgentId,agentId).one();
+
         return StudentAgentChatClient.prompt()
-                .system(StudentPrompt.PROMPT1)
+                .system(agentDiy.getPrompt())
                 .user(prompt)
                 .advisors(a->a.param(ChatMemory.CONVERSATION_ID,chatId))
                 .stream()
