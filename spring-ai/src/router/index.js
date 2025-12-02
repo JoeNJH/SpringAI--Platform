@@ -41,6 +41,11 @@ const routes = [
     path: '/agent-chat',
     name: 'AgentChat',
     component: () => import('../views/AgentChat.vue')
+  },
+  {
+    path: '/admin',
+    name: 'AgentDiy',
+    component: () => import('../views/AgentDiy.vue')
   }
 ]
 
