@@ -202,7 +202,8 @@ export const chatAPI = {
       return agents.map(agent => ({
         id: agent.agentId,
         title: agent.name,
-        description: agent.description
+        description: agent.description,
+        prompt: agent.prompt
       }));
     } catch (error) {
       console.error('API Error:', error);
