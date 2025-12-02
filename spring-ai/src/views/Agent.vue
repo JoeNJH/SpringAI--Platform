@@ -18,6 +18,9 @@
 
       <!-- 添加的RAG按钮 -->
       <div class="rag-button-container">
+        <button class="admin-button" @click="goToAdmin">
+          Agent Management
+        </button>
         <button class="rag-button" @click="goToRag">
           RAG Knowledge Base
         </button>
@@ -64,6 +67,11 @@ const selectAgent = (agent) => {
 // New method: navigate to RAG page
 const goToRag = () => {
   window.location.href = 'http://localhost:5173/chat-pdf'
+}
+
+// New method: navigate to admin page
+const goToAdmin = () => {
+  router.push('/agent-admin')
 }
 
 // Fetch agents when component mounts
@@ -166,7 +174,30 @@ onMounted(() => {
   .rag-button-container {
     display: flex;
     justify-content: center;
+    gap: 2rem;
     margin-top: 2rem;
+  }
+
+  // Admin button style
+  .admin-button {
+    background: linear-gradient(45deg, #ff6b6b, #ffa502); // Orange/red gradient
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
   }
 
   // RAG button style
