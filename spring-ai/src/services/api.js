@@ -209,5 +209,24 @@ export const chatAPI = {
       console.error('API Error:', error);
       throw error;
     }
+  },
+
+  // Add this method to the existing chatAPI object in api.js
+  async deleteAgent(agentId) {
+    try {
+      const response = await fetch(`${BASE_URL}/agent/del/${agentId}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
   }
+
 }

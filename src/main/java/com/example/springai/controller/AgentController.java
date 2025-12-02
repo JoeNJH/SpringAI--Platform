@@ -2,6 +2,7 @@ package com.example.springai.controller;
 
 
 import com.example.springai.entity.po.Agent;
+import com.example.springai.entity.vo.Result;
 import com.example.springai.repository.ChatHistoryRepository;
 import com.example.springai.service.IAgentService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,14 @@ public class AgentController {
 
         return iAgentService.lambdaQuery().list();
     }
+
+    @RequestMapping(value = "/del/{agentId}")
+    public Result delete(@PathVariable("agentId") String agentId){
+        iAgentService.removeById(agentId);
+        return Result.ok();
+    }
+
+
 
     @RequestMapping(value = "/chat/{agentId}",produces = "text/html;charset=utf-8")
     public Flux<String> chat(
