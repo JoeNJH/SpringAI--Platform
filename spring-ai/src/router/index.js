@@ -46,7 +46,13 @@ const routes = [
     path: '/agent-admin',
     name: 'AgentDiy',
     component: () => import('../views/AgentDiy.vue')
-  }
+  },
+  {
+    path: '/agent/create',
+    name: 'CreateAgent',
+    component: () => import('../views/CreateAgent.vue')
+  },
+
 ]
 
 const router = createRouter({
