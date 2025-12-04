@@ -227,6 +227,29 @@ export const chatAPI = {
       console.error('API Error:', error);
       throw error;
     }
+  },
+
+  // Add this new method inside the chatAPI object
+  async generateAgentPrompt(persona) {
+    try {
+      const response = await fetch(`${BASE_URL}/agent/prompt`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(persona)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.text();
+      return result;
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
   }
 
 }
