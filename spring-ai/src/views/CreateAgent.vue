@@ -34,7 +34,7 @@
               <label>Personality *</label>
               <div class="personality-tags">
                 <span
-                  v-for="trait in personalityTraits"
+                  v-for="trait in allPersonalityTraits"
                   :key="trait"
                   @click="togglePersonality(trait)"
                   :class="{ selected: formData.personality.includes(trait) }"
@@ -45,7 +45,7 @@
                 <input
                   type="text"
                   v-model="newTrait"
-                  @keyup.enter="addCustomTrait"
+                  @keydown.enter.prevent="handleEnterKey"
                   placeholder="Add custom trait + Enter"
                   class="custom-trait-input"
                 />
@@ -130,7 +130,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { useDark } from '@vueuse/core'
 import { chatAPI } from '../services/api'
 import { useRouter } from 'vue-router'
@@ -151,12 +151,18 @@ const formData = reactive({
   goal: ''
 })
 
-const personalityTraits = [
+const predefinedTraits = [
   'Friendly', 'Serious', 'Humorous', 'Patient',
   'Curious', 'Helpful', 'Enthusiastic', 'Thoughtful',
   'Creative', 'Analytical', 'Supportive', 'Encouraging',
   'Adventurous', 'Responsible', 'Optimistic', 'Empathetic'
 ]
+
+const customTraits = ref([])
+
+const allPersonalityTraits = computed(() => {
+  return [...predefinedTraits, ...customTraits.value]
+})
 
 const togglePersonality = (trait) => {
   const index = formData.personality.indexOf(trait)
@@ -167,12 +173,22 @@ const togglePersonality = (trait) => {
   }
 }
 
-const addCustomTrait = () => {
-  if (newTrait.value.trim() && !personalityTraits.includes(newTrait.value.trim())) {
-    personalityTraits.push(newTrait.value.trim())
-    formData.personality.push(newTrait.value.trim())
-    newTrait.value = ''
+const handleEnterKey = () => {
+  const traitValue = newTrait.value.trim()
+  if (!traitValue) return
+
+  // If it's a new custom trait, add it to customTraits
+  if (!predefinedTraits.includes(traitValue) && !customTraits.value.includes(traitValue)) {
+    customTraits.value.push(traitValue)
   }
+
+  // Select the trait (whether predefined or custom)
+  if (!formData.personality.includes(traitValue)) {
+    formData.personality.push(traitValue)
+  }
+
+  // Clear the input
+  newTrait.value = ''
 }
 
 const submitForm = async () => {
