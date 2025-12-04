@@ -4,9 +4,14 @@
       <h1 class="title">Agent Management</h1>
 
       <div class="actions-bar">
-        <button class="refresh-btn" @click="fetchAgents">
-          Refresh Agents
-        </button>
+        <div class="left-actions">
+          <button class="refresh-btn" @click="fetchAgents">
+            Refresh Agents
+          </button>
+          <button class="create-btn" @click="$router.push('/agent/create')">
+            Create New Agent
+          </button>
+        </div>
         <router-link to="/agent" class="back-btn">
           Back to Agents
         </router-link>
@@ -160,7 +165,12 @@ onMounted(() => {
     justify-content: space-between;
     margin-bottom: 2rem;
 
-    .refresh-btn, .back-btn {
+    .left-actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .refresh-btn, .back-btn, .create-btn {
       background: linear-gradient(45deg, #007CF0, #00DFD8);
       color: white;
       border: none;
@@ -187,6 +197,28 @@ onMounted(() => {
 
       &:hover {
         box-shadow: 0 4px 10px rgba(138, 43, 226, 0.3);
+      }
+    }
+
+    .create-btn {
+      background: linear-gradient(45deg, #28a745, #20c997);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+      }
+
+      &:active {
+        transform: translateY(0);
       }
     }
   }
