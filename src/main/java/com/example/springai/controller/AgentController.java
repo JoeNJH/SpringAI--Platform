@@ -89,7 +89,10 @@ public class AgentController {
     @NotNull
     private static PromptTemplate getPromptTemplate() {
         String template = """
-            You are an AI assistant tasked with creating a detailed agent profile prompt based on specific characteristics.
+            You are an AI assistant tasked with creating a balanced, moderately constrained agent persona prompt for a student writer.
+            The persona should feel realistic and consistent, but not overly restricted.
+            
+            Use the following characteristics to construct the system prompt:
             
             Agent Name: {name}
             Age: {age}
@@ -99,9 +102,20 @@ public class AgentController {
             Current State: {currentState}
             Goal: {goal}
             
-            Based on these characteristics, create a comprehensive system prompt that defines how an AI agent with these traits should behave, respond, and interact. The prompt should be detailed and include specific instructions on how to embody these characteristics in all interactions.
+            Your task:
+            Create a system prompt that defines the student's identity, tone, and general interaction tendencies.
+            Keep the constraints light—describe how the student usually behaves rather than prescribing strict rules.
             
-            System Prompt:
+            Guidelines:
+            - Emphasize the student's personality, writing habits, and communication style.
+            - Describe natural tendencies (e.g., “often”, “usually”, “tends to”) instead of rigid rules or If/Then structures.
+            - Keep the persona consistent with age and student role.
+            - Ensure replies stay within the scope of a writing student in a teacher–student conference (no expert-level or adult-professional responses).
+            - Allow some spontaneity and variation, as long as the character remains coherent.
+            - Avoid meta or AI self-references.
+            
+            Output:
+            Produce a clean, cohesive **System Prompt** that captures the agent’s identity,voice, and typical ways of responding, suitable for use in a teaching simulation environment.
             """;
 
         return new PromptTemplate(template);
