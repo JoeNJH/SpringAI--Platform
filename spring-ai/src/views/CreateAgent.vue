@@ -117,10 +117,17 @@
 
         <div class="preview-section">
           <h2>Generated Prompt</h2>
-          <div class="prompt-controls" v-if="generatedPrompt">
-            <button @click="saveAgent" class="save-btn">Save Agent</button>
+          <div class="prompt-controls" v-if="generatedPrompt || promptLoading">
+            <button
+              @click="saveAgent"
+              class="save-btn"
+              :disabled="promptLoading"
+            >
+              Save Agent
+            </button>
           </div>
-          <div class="prompt-preview" v-if="generatedPrompt">
+
+          <div class="prompt-preview" v-if="!promptLoading && generatedPrompt">
             <textarea
               v-model="editablePrompt"
               class="prompt-editor"
@@ -131,6 +138,12 @@
               <div v-html="renderedMarkdown" class="markdown-content"></div>
             </div>
           </div>
+
+          <div v-else-if="promptLoading" class="loading-container">
+            <div class="spinner"></div>
+            <p>Generating prompt...</p>
+          </div>
+
           <div v-else class="placeholder">
             Generated prompt will appear here after submission
           </div>
@@ -152,6 +165,7 @@ const md = new MarkdownIt()
 const isDark = useDark()
 const router = useRouter()
 const loading = ref(false)
+const promptLoading = ref(false)
 const generatedPrompt = ref('')
 const newTrait = ref('')
 const editablePrompt = ref('')
@@ -219,6 +233,7 @@ watch(generatedPrompt, (newVal) => {
 const submitForm = async () => {
   try {
     loading.value = true
+    promptLoading.value = true
 
     // Prepare persona object as requested
     const persona = {
@@ -239,6 +254,7 @@ const submitForm = async () => {
     alert('Failed to generate prompt. Please try again.')
   } finally {
     loading.value = false
+    promptLoading.value = false
   }
 }
 
@@ -307,6 +323,7 @@ const saveAgent = async () => {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
+    position: relative;
 
     .dark & {
       background: #2d2d2d;
@@ -464,7 +481,11 @@ const saveAgent = async () => {
   }
 
   .prompt-controls {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
     margin-bottom: 1rem;
+    z-index: 10;
 
     .save-btn {
       padding: 0.5rem 1rem;
@@ -477,6 +498,11 @@ const saveAgent = async () => {
       &:hover {
         background: #218838;
       }
+
+      &:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+      }
     }
   }
 
@@ -485,6 +511,7 @@ const saveAgent = async () => {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    margin-top: 2rem;
   }
 
   .prompt-editor {
@@ -623,6 +650,34 @@ const saveAgent = async () => {
     }
   }
 
+  .loading-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(0, 124, 240, 0.3);
+      border-radius: 50%;
+      border-top-color: #007CF0;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      color: #6c757d;
+      font-style: italic;
+
+      .dark & {
+        color: #aaa;
+      }
+    }
+  }
+
   &.dark {
     background: #1a1a1a;
   }
@@ -636,6 +691,12 @@ const saveAgent = async () => {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
