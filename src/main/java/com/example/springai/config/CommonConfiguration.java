@@ -34,7 +34,7 @@ public class CommonConfiguration {
        //设置一个最大的消息存储数量
         return MessageWindowChatMemory.builder()
                 .chatMemoryRepository(chatMemoryRepository)
-                .maxMessages(20).build();
+                .maxMessages(100).build();
     }
 
     // 多模态对话客户端配置
