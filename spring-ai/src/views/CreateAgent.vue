@@ -117,8 +117,19 @@
 
         <div class="preview-section">
           <h2>Generated Prompt</h2>
+          <div class="prompt-controls" v-if="generatedPrompt">
+            <button @click="saveAgent" class="save-btn">Save Agent</button>
+          </div>
           <div class="prompt-preview" v-if="generatedPrompt">
-            <pre>{{ generatedPrompt }}</pre>
+            <textarea
+              v-model="editablePrompt"
+              class="prompt-editor"
+              placeholder="Generated prompt will appear here..."
+            ></textarea>
+            <div class="markdown-preview">
+              <h3>Markdown Preview:</h3>
+              <div v-html="renderedMarkdown" class="markdown-content"></div>
+            </div>
           </div>
           <div v-else class="placeholder">
             Generated prompt will appear here after submission
@@ -130,16 +141,25 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { useDark } from '@vueuse/core'
 import { chatAPI } from '../services/api'
 import { useRouter } from 'vue-router'
+import MarkdownIt from 'markdown-it'
+
+const md = new MarkdownIt()
 
 const isDark = useDark()
 const router = useRouter()
 const loading = ref(false)
 const generatedPrompt = ref('')
 const newTrait = ref('')
+const editablePrompt = ref('')
+
+// 计算属性用于渲染Markdown
+const renderedMarkdown = computed(() => {
+  return md.render(editablePrompt.value || '')
+})
 
 const formData = reactive({
   name: '',
@@ -191,6 +211,11 @@ const handleEnterKey = () => {
   newTrait.value = ''
 }
 
+// 监听generatedPrompt变化，同步更新editablePrompt
+watch(generatedPrompt, (newVal) => {
+  editablePrompt.value = newVal
+})
+
 const submitForm = async () => {
   try {
     loading.value = true
@@ -214,6 +239,18 @@ const submitForm = async () => {
     alert('Failed to generate prompt. Please try again.')
   } finally {
     loading.value = false
+  }
+}
+
+// 保存编辑后的prompt
+const saveAgent = async () => {
+  try {
+    await chatAPI.saveAgent(formData.name, editablePrompt.value);
+    alert('Agent saved successfully!');
+    router.push('/agents'); // 保存成功后跳转到 agents 页面
+  } catch (error) {
+    console.error('Error saving agent:', error);
+    alert('Failed to save agent. Please try again.');
   }
 }
 </script>
@@ -243,7 +280,7 @@ const submitForm = async () => {
 
   .content-wrapper {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 2fr; /* 左侧1/3，右侧2/3 */
     gap: 2rem;
 
     @media (max-width: 1024px) {
@@ -426,29 +463,147 @@ const submitForm = async () => {
     }
   }
 
+  .prompt-controls {
+    margin-bottom: 1rem;
+
+    .save-btn {
+      padding: 0.5rem 1rem;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+
+      &:hover {
+        background: #218838;
+      }
+    }
+  }
+
   .prompt-preview {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .prompt-editor {
+    width: 100%;
+    min-height: 200px;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    resize: vertical;
+    background: #f8f9fa;
+    color: #333;
+
+    .dark & {
+      background: #3d3d3d;
+      border-color: #555;
+      color: #fff;
+    }
+  }
+
+  .markdown-preview {
     flex: 1;
     background: #f8f9fa;
     border-radius: 4px;
     padding: 1rem;
     overflow-y: auto;
-    min-height: 300px;
+    min-height: 200px;
 
     .dark & {
       background: #3d3d3d;
     }
 
-    pre {
-      margin: 0;
-      white-space: pre-wrap;
-      word-break: break-word;
-      font-family: monospace;
-      font-size: 0.9rem;
-      line-height: 1.5;
+    h3 {
+      margin-top: 0;
+      color: #333;
+
+      .dark & {
+        color: #fff;
+      }
+    }
+  }
+
+  .markdown-content {
+    line-height: 1.5;
+
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+      color: #333;
+
+      .dark & {
+        color: #fff;
+      }
+    }
+
+    p {
+      margin-bottom: 1rem;
       color: #333;
 
       .dark & {
         color: #ccc;
+      }
+    }
+
+    ul, ol {
+      padding-left: 1.5rem;
+      margin-bottom: 1rem;
+
+      li {
+        margin-bottom: 0.25rem;
+        color: #333;
+
+        .dark & {
+          color: #ccc;
+        }
+      }
+    }
+
+    code {
+      padding: 0.2rem 0.4rem;
+      background: #e9ecef;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.875rem;
+
+      .dark & {
+        background: #4d4d4d;
+      }
+    }
+
+    pre {
+      padding: 1rem;
+      background: #e9ecef;
+      border-radius: 4px;
+      overflow-x: auto;
+
+      .dark & {
+        background: #4d4d4d;
+      }
+
+      code {
+        padding: 0;
+        background: none;
+      }
+    }
+
+    blockquote {
+      margin: 0 0 1rem;
+      padding: 0.5rem 1rem;
+      border-left: 4px solid #007CF0;
+      background: #e9ecef;
+
+      .dark & {
+        background: #4d4d4d;
+      }
+
+      p {
+        margin-bottom: 0;
       }
     }
   }

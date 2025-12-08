@@ -250,6 +250,28 @@ export const chatAPI = {
       console.error('API Error:', error);
       throw error;
     }
+  },
+
+  // 在 chatAPI 对象中添加以下新方法
+  async saveAgent(name, prompt) {
+    try {
+      const response = await fetch(`${BASE_URL}/agent/save`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, prompt })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
   }
 
 }
