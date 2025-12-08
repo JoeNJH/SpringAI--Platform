@@ -14,6 +14,9 @@ import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 
 @RequiredArgsConstructor
@@ -119,5 +122,40 @@ public class AgentController {
 
         return new PromptTemplate(template);
     }
+
+    @PostMapping("/save")
+    public Result saveAgent(@RequestBody Map<String, String> requestData) {
+        String name = requestData.get("name");
+        String prompt = requestData.get("prompt");
+    try {
+        // 创建Agent对象
+        Agent agent = new Agent();
+        // 生成随机四位数字并转为字符串
+        agent.setAgentId(String.format("%04d", new Random().nextInt(10000)));
+        agent.setName(name);
+        agent.setPrompt(prompt);
+
+        String description = StudentAgentChatClient.prompt()
+                .system("You generate a concise description (under 15 words) that must start with \"A student\" and summarize the given prompt. " +
+                        "Output only the description with no extra text, symbols, or explanations.")
+                .user(prompt)
+                .call()
+                .content();
+
+        // 生成描述
+        agent.setDescription(description);
+
+        // 保存到数据库
+        boolean saved = iAgentService.save(agent);
+
+        if (saved) {
+            return Result.ok();
+        } else {
+            return Result.fail("Failed to save agent");
+        }
+    } catch (Exception e) {
+        return Result.fail("Error saving agent: " + e.getMessage());
+    }
+}
 
 }
