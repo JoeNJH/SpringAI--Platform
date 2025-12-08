@@ -121,13 +121,13 @@
             <button
               @click="saveAgent"
               class="save-btn"
-              :disabled="promptLoading"
+              :disabled="promptLoading || savingAgent"
             >
               Save Agent
             </button>
           </div>
 
-          <div class="prompt-preview" v-if="!promptLoading && generatedPrompt">
+          <div class="prompt-preview" v-if="!promptLoading && generatedPrompt && !savingAgent">
             <textarea
               v-model="editablePrompt"
               class="prompt-editor"
@@ -139,9 +139,9 @@
             </div>
           </div>
 
-          <div v-else-if="promptLoading" class="loading-container">
+          <div v-else-if="promptLoading || savingAgent" class="loading-container">
             <div class="spinner"></div>
-            <p>Generating prompt...</p>
+            <p>{{ promptLoading ? 'Generating prompt...' : 'Generating description and saving agent...' }}</p>
           </div>
 
           <div v-else class="placeholder">
@@ -169,6 +169,7 @@ const promptLoading = ref(false)
 const generatedPrompt = ref('')
 const newTrait = ref('')
 const editablePrompt = ref('')
+const savingAgent = ref(false)
 
 // 计算属性用于渲染Markdown
 const renderedMarkdown = computed(() => {
@@ -261,27 +262,41 @@ const submitForm = async () => {
 // 保存编辑后的prompt
 const saveAgent = async () => {
   try {
+    savingAgent.value = true
     await chatAPI.saveAgent(formData.name, editablePrompt.value);
     alert('Agent saved successfully!');
     router.push('/agent-admin'); // 保存成功后跳转到 agents 管理页面
   } catch (error) {
     console.error('Error saving agent:', error);
     alert('Failed to save agent. Please try again.');
+  } finally {
+    savingAgent.value = false
   }
 }
 </script>
 
 <style scoped lang="scss">
 .create-agent {
-  min-height: 100vh;
-  padding: 0.3rem;
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
   background: var(--bg-color);
+  overflow: hidden;
   transition: background-color 0.3s;
 
   .container {
-    max-width: 1600px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 1800px;
+    width: 100%;
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 1.5rem 2rem;
+    height: 100%;
+    overflow: hidden;
   }
 
   .title {
@@ -296,8 +311,10 @@ const saveAgent = async () => {
 
   .content-wrapper {
     display: grid;
-    grid-template-columns: 1fr 2fr; /* 左侧1/3，右侧2/3 */
+    grid-template-columns: 1fr 2fr;
     gap: 2rem;
+    height: 100%;
+    overflow: hidden;
 
     @media (max-width: 1024px) {
       grid-template-columns: 1fr;
@@ -309,6 +326,7 @@ const saveAgent = async () => {
     border-radius: 10px;
     padding: 1.5rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
 
     .dark & {
       background: #2d2d2d;
@@ -324,6 +342,7 @@ const saveAgent = async () => {
     display: flex;
     flex-direction: column;
     position: relative;
+    overflow-y: auto;
 
     .dark & {
       background: #2d2d2d;
@@ -702,10 +721,8 @@ const saveAgent = async () => {
 
 @media (max-width: 768px) {
   .create-agent {
-    padding: 1rem;
-
     .container {
-      padding: 0 1rem;
+      padding: 0;
     }
 
     .title {
@@ -714,6 +731,7 @@ const saveAgent = async () => {
 
     .content-wrapper {
       gap: 1rem;
+      padding: 1rem;
     }
   }
 }
