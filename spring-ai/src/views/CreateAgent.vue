@@ -263,7 +263,7 @@ const saveAgent = async () => {
   try {
     await chatAPI.saveAgent(formData.name, editablePrompt.value);
     alert('Agent saved successfully!');
-    router.push('/agents'); // 保存成功后跳转到 agents 页面
+    router.push('/agent'); // 保存成功后跳转到 agents 页面
   } catch (error) {
     console.error('Error saving agent:', error);
     alert('Failed to save agent. Please try again.');
