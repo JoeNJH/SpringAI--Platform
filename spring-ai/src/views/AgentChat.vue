@@ -90,7 +90,7 @@ const agentBackground = computed(() => {
 // 新增计算属性：根据当前选择的学生获取头像路径
 const agentAvatar = computed(() => {
   const agentName = route.query.agentName
-  return agentName ? `/StudentIcon/1${agentName}.png` : ''
+  return agentName ? `/StudentIcon/1Kai.png` : ''
 })
 
 // Auto-adjust textarea height
