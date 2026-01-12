@@ -26,6 +26,13 @@
             <version>${spring-ai-alibaba.version}</version>
         </dependency>
 
+    <!-- 引入graph -->
+        <dependency>
+            <groupId>com.alibaba.cloud.ai</groupId>
+            <artifactId>spring-ai-alibaba-graph-core</artifactId>
+            <version>1.1.0.0-M5</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
